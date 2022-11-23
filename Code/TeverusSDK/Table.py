@@ -37,6 +37,7 @@ class Table:
         max_rows=None,
         max_columns=None,
         column_widths=None,
+        clear_console=True,
         show_cursor=False,
     ):
         """
@@ -67,6 +68,7 @@ class Table:
 
         # General table
         self.highlight = highlight
+        self.clear_console = clear_console
         self.show_cursor = show_cursor
         self.current_page = current_page
         self.max_rows = self.get_max_rows(max_rows)
@@ -87,18 +89,22 @@ class Table:
     def print_table(self):
 
         # Clear the console
-        os.system("cls")
+        if self.clear_console:
+            os.system("cls")
 
         [bext.show if self.show_cursor else bext.hide][0]()
 
         # Print table title if any
         if self.table_title:
-            print(self.table_title_top_border * self.table_width)
+            if self.table_title_top_border:
+                print(self.table_title_top_border * self.table_width)
 
             tt = self.table_title
             tt = tt.upper() if self.table_title_caps else tt
             tt = tt.center(self.table_width) if self.table_title_centered else tt
             print(tt)
+
+        # TODO XXXXX    Сделать headers
 
         # Print rows top border if any
         if self.rows_top_border:
