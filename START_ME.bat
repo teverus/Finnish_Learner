@@ -1,5 +1,5 @@
 @echo off
-mode con: cols=117 lines=43
+mode con: cols=119 lines=43
 title=Suomalainen opiskelija
 
 : ======================================================================================

@@ -1,5 +1,5 @@
 from Code.Modules.PracticeSingleWord import PracticeSingleWord
-from Code.TeverusSDK.Screen import Screen, Action
+from Code.TeverusSDK.Screen import Screen, Action, SCREEN_WIDTH
 from Code.TeverusSDK.Table import Table, ColumnWidth
 
 
@@ -18,13 +18,14 @@ class PracticeSingleWordScreen(Screen):
         self.table = Table(
             table_title="Practice a single word",
             rows=[
-                ["PASS", f"{'-' * 100}", "  0 %"],
-                ["FAIL", f"{'-' * 100}", "  0 %"],
-                ["DONE", f"{'-' * 100}", "  0 %"],
+                [" PASS", f"{'-' * 100}", "  0 %"],
+                [" FAIL", f"{'-' * 100}", "  0 %"],
+                [" DONE", f"{'-' * 100}", "  0 %"],
             ],
             column_widths={0: ColumnWidth.FIT, 1: ColumnWidth.FIT, 2: ColumnWidth.FIT},
             highlight=False,
             show_cursor=True,
+            table_width=SCREEN_WIDTH,
         )
 
         super(PracticeSingleWordScreen, self).__init__(self.table, self.actions)

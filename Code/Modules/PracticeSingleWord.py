@@ -17,7 +17,7 @@ DONE = "DONE"
 class PracticeSingleWord:
     def __init__(self, main):
         self.statistics = {PASS: 0, FAIL: 0, DONE: 0}
-        self.wrong_answers = {}
+        self.wrong_answers = []
         self.delta = 0
         self.message = None
         self.user_input = None
@@ -91,11 +91,12 @@ class PracticeSingleWord:
         else:
             # TODO XXXX     Брать delta из настроек
             self.delta = -2
-            wrong = f"""Sorry, it's '{self.finnish}', not '{self.user_input}'"""
+            not_part = "" if not self.user_input else f', not "{self.user_input}"'
+            wrong = f"""Sorry, it's "{self.finnish}"{not_part}"""
             self.message = wrong
             self.statistics[FAIL] += 1
-            # TODO X        Показывать перевод слова
-            self.wrong_answers[self.finnish] = self.user_input
+            wrong_answer = "?" if not self.user_input else self.user_input
+            self.wrong_answers.append([self.english, self.finnish, wrong_answer])
 
     def show_results_table(self, main):
         self.update_table(main)
@@ -105,13 +106,12 @@ class PracticeSingleWord:
 
     def show_wrong_answers_if_any(self):
         if self.wrong_answers:
-            answers = [[right, wrong] for right, wrong in self.wrong_answers.items()]
-            width = self.column_width
-            columns = f"{'CORRECT'.center(width)} | {'INCORRECT'.center(width)}"
+            width = int((SCREEN_WIDTH - (3 * 2) - 2) / 3)
+            title = f"{'ENGLISH'.center(width)} | {'CORRECT'.center(width)} | {'INCORRECT'.center(width)}"
             wrong_table = Table(
-                table_title=f" {columns} ",
+                table_title=title,
                 table_title_top_border=False,
-                rows=answers,
+                rows=self.wrong_answers,
                 rows_top_border="-",
                 table_width=SCREEN_WIDTH,
                 clear_console=False,
@@ -150,7 +150,7 @@ class PracticeSingleWord:
 
     def record_result_to_database_and_statistics(self):
         self.df.loc[self.word_index, "Score"] += self.delta
-        # self.database.write_to_table(self.df)  # TODO вернуть
+        self.database.write_to_table(self.df)
         self.statistics[DONE] += 1
 
     def get_words_for_this_run(self):

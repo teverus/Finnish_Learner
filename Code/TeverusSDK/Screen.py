@@ -10,7 +10,7 @@ from Code.TeverusSDK.Table import HIGHLIGHT, END_HIGHLIGHT, Table
 #    SCREEN CONFIGS                                                                    #
 ########################################################################################
 
-SCREEN_WIDTH = 117
+SCREEN_WIDTH = 119
 GO_BACK_TEXT = "[Q] Go back    "
 
 
