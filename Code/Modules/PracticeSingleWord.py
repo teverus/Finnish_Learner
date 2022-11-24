@@ -11,8 +11,6 @@ PASS = "PASS"
 FAIL = "FAIL"
 DONE = "DONE"
 
-# TODO X        Показывать столько осталось
-
 
 class PracticeSingleWord:
     def __init__(self, main):
@@ -39,9 +37,8 @@ class PracticeSingleWord:
         self.get_words_for_this_run()
 
         for _ in range(self.total_words):
-            if _:
-                self.update_table(main)
-                main.table.print_table()
+            self.update_table(main)
+            main.table.print_table()
 
             self.get_random_word()
 
@@ -64,8 +61,9 @@ class PracticeSingleWord:
         TICKS = 1
         PERCENTAGE = 2
 
-        current_pass = int(self.statistics[PASS] / self.statistics[DONE] * 100)
-        current_fail = int(self.statistics[FAIL] / self.statistics[DONE] * 100)
+        safe_statistics = 1 if not self.statistics[DONE] else self.statistics[DONE]
+        current_pass = int(self.statistics[PASS] / safe_statistics * 100)
+        current_fail = int(self.statistics[FAIL] / safe_statistics * 100)
         current_done = int(self.statistics[DONE] / self.total_words * 100)
         stats = [current_pass, current_fail, current_done]
 
@@ -73,6 +71,11 @@ class PracticeSingleWord:
             result = f"{char * stat}{'-' * (100 - stat)}"
             row[TICKS] = result
             row[PERCENTAGE] = f"{str(stat).rjust(3)} %"
+
+        done = self.statistics[DONE] + 1
+        left = self.total_words - done
+        title = f"WORD {done:02} of {self.total_words} [LEFT: {left}]"
+        main.table.table_title = title.center(SCREEN_WIDTH)
 
     @staticmethod
     def get_input(message):
