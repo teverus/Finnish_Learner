@@ -1,15 +1,20 @@
 import random
+from configparser import ConfigParser
 from pathlib import Path
 
 import bext
 
 from Code.TeverusSDK.DataBase import DataBase
 from Code.TeverusSDK.Screen import SCREEN_WIDTH, show_message, wait_for_enter
-from Code.TeverusSDK.Table import Table
+from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN, BLUE
 
 PASS = "PASS"
 FAIL = "FAIL"
 DONE = "DONE"
+
+CONFIG = ConfigParser()
+CONFIG.read("config.ini")
+SETTINGS = CONFIG["Settings"]
 
 
 class PracticeSingleWord:
@@ -27,8 +32,7 @@ class PracticeSingleWord:
         self.english = None
         self.word_index = None
 
-        # TODO XXXX     Брать total_words из настроек
-        self.total_words = 10
+        self.total_words = SETTINGS.getint(Settings.WORDS_PER_RUN)
 
         self.column_width = int((SCREEN_WIDTH - 3 - 2) / 2)
         self.database = DataBase(Path("Files/Words.db"))
@@ -57,13 +61,19 @@ class PracticeSingleWord:
     #    HELPERS                                                                       #
     ####################################################################################
     def update_table(self, main):
-        CHARS = ["O", "X", "I"]
+        CHARS = [
+            f"{GREEN} {END_HIGHLIGHT}",
+            f"{RED} {END_HIGHLIGHT}",
+            f"{BLUE} {END_HIGHLIGHT}",
+        ]
         TICKS = 1
         PERCENTAGE = 2
 
         safe_statistics = 1 if not self.statistics[DONE] else self.statistics[DONE]
         current_pass = int(self.statistics[PASS] / safe_statistics * 100)
         current_fail = int(self.statistics[FAIL] / safe_statistics * 100)
+        if (current_pass and current_fail) and current_pass + current_fail != 100:
+            current_pass += 1
         current_done = int(self.statistics[DONE] / self.total_words * 100)
         stats = [current_pass, current_fail, current_done]
 
@@ -86,17 +96,15 @@ class PracticeSingleWord:
 
     def evaluate_answer(self):
         if self.user_input == self.finnish:
-            # TODO XXXX     Брать delta из настроек
-            self.delta = 1
-            self.message = "Success :)"
+            self.delta = SETTINGS.getint(Settings.POSITIVE_CHANGE)
+            self.message = ("Success :)", GREEN)
             self.statistics[PASS] += 1
 
         else:
-            # TODO XXXX     Брать delta из настроек
-            self.delta = -2
+            self.delta = SETTINGS.getint(Settings.NEGATIVE_CHANGE)
             not_part = "" if not self.user_input else f', not "{self.user_input}"'
             wrong = f"""Sorry, it's "{self.finnish}"{not_part}"""
-            self.message = wrong
+            self.message = (wrong, RED)
             self.statistics[FAIL] += 1
             wrong_answer = "?" if not self.user_input else self.user_input
             self.wrong_answers.append([self.english, self.finnish, wrong_answer])
@@ -124,8 +132,7 @@ class PracticeSingleWord:
     def practice_the_word_if_needed(self):
         if self.delta < 0:
             correct = 0
-            # TODO XXXX     Брать correct_answers из настроек
-            need_correct = 3
+            need_correct = SETTINGS.getint(Settings.NEED_CORRECT)
             while correct != need_correct:
                 times_left = need_correct - correct
                 plural = "s" if times_left > 1 else ""
@@ -134,10 +141,10 @@ class PracticeSingleWord:
                 if new_input == self.finnish:
                     correct += 1
                 else:
-                    msg = f'Sorry, you need to type "{self.finnish}"'
+                    msg = (f'Sorry, you need to type "{self.finnish}"', RED)
                     show_message(msg, upper=False, need_confirmation=False)
             bext.hide()
-            show_message("Success :)", upper=False)
+            show_message(("Success :)", GREEN), upper=False)
 
     def ask_user_to_type_the_finnish_word(self):
         prompt = f" {self.english.center(self.column_width)} | >>> "
@@ -153,7 +160,11 @@ class PracticeSingleWord:
 
     def record_result_to_database_and_statistics(self):
         self.df.loc[self.word_index, "Score"] += self.delta
-        self.database.write_to_table(self.df)
+        self.df.sort_values(by="Score", inplace=True)
+
+        if SETTINGS.getboolean(Settings.RECORD_ANSWERS):
+            self.database.write_to_table(self.df)
+
         self.statistics[DONE] += 1
 
     def get_words_for_this_run(self):
@@ -178,3 +189,16 @@ class PracticeSingleWord:
                 self.used_words.append(random_word)
 
                 break
+
+
+########################################################################################
+#    SETTINGS                                                                          #
+########################################################################################
+
+
+class Settings:
+    WORDS_PER_RUN = "Words per run"
+    POSITIVE_CHANGE = "Positive change"
+    NEGATIVE_CHANGE = "Negative change"
+    NEED_CORRECT = "How many times practice a word with an error"
+    RECORD_ANSWERS = "Record answers to database"

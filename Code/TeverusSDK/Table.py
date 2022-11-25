@@ -4,7 +4,11 @@ from math import ceil
 import bext
 from colorama import Back, Fore
 
-HIGHLIGHT = Back.WHITE + Fore.BLACK
+WHITE = Back.WHITE + Fore.BLACK
+RED = Back.RED + Fore.WHITE
+GREEN = Back.GREEN + Fore.WHITE
+BLUE = Back.BLUE + Fore.WHITE
+
 END_HIGHLIGHT = Back.BLACK + Fore.WHITE
 
 
@@ -117,7 +121,7 @@ class Table:
             for y, cell in enumerate(row):
                 target_width = self.column_widths[y]
                 cell = cell.center(target_width) if self.rows_centered else cell
-                highlighted = f"{HIGHLIGHT}{cell}{END_HIGHLIGHT}"
+                highlighted = f"{WHITE}{cell}{END_HIGHLIGHT}"
                 data = highlighted if [x, y] == self.highlight else cell
                 line.append(data)
             line = " | ".join(line)

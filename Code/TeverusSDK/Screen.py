@@ -4,7 +4,7 @@ from typing import Union
 
 import bext
 
-from Code.TeverusSDK.Table import HIGHLIGHT, END_HIGHLIGHT, Table
+from Code.TeverusSDK.Table import END_HIGHLIGHT, Table
 
 ########################################################################################
 #    SCREEN CONFIGS                                                                    #
@@ -228,9 +228,12 @@ def wait_for_enter():
 
 
 def show_message(msg, border=" ", centered=True, upper=True, need_confirmation=True):
-    print(HIGHLIGHT)
+    text_message = msg[0]
+    color = msg[1]
+
+    print(color)
     print(f"{border * SCREEN_WIDTH}")
-    message = msg.upper() if upper else msg
+    message = text_message.upper() if upper else text_message
     text = message.center if centered else message.ljust
     print(text(SCREEN_WIDTH))
     print(f"{border * SCREEN_WIDTH}{END_HIGHLIGHT}")
