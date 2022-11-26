@@ -1,5 +1,6 @@
 import random
 from configparser import ConfigParser
+from datetime import datetime
 from pathlib import Path
 
 import bext
@@ -19,6 +20,7 @@ SETTINGS = CONFIG["Settings"]
 
 class PracticeSingleWord:
     def __init__(self, main):
+        self.start_time = datetime.now()
         self.statistics = {PASS: 0, FAIL: 0, DONE: 0}
         self.wrong_answers = []
         self.delta = 0
@@ -111,7 +113,9 @@ class PracticeSingleWord:
 
     def show_results_table(self, main):
         self.update_table(main)
-        main.table.table_title = "Results"
+        finish_time = datetime.now()
+        time_elapsed = str(finish_time - self.start_time).split(".")[0]
+        main.table.table_title = f"Results | {time_elapsed}"
         main.table.show_cursor = False
         main.table.print_table()
 
