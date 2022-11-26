@@ -1,4 +1,4 @@
-from Code.Screens.PracticeWordSingleScreen import PracticeWordSingleScreen
+from Code.Screens.PracticePhrasesScreen import PracticePhrasesScreen
 from Code.TeverusSDK.Screen import (
     Screen,
     SCREEN_WIDTH,
@@ -9,29 +9,25 @@ from Code.TeverusSDK.Screen import (
 from Code.TeverusSDK.Table import Table
 
 
-class WordsScreen(Screen):
+class PhrasesScreen(Screen):
     def __init__(self):
         self.actions = [
             Action(
-                name="Practice a single word",
-                function=PracticeWordSingleScreen,
+                name="Practice phrases",
+                function=PracticePhrasesScreen,
             ),
             Action(
-                name="Practice word combinations",
-                function=do_nothing,
-            ),
-            Action(
-                name="See all words",
+                name="See all phrases",
                 function=do_nothing,
             ),
         ]
 
         self.table = Table(
-            table_title="Words",
+            table_title="Phrases",
             rows=[action.name for action in self.actions],
             rows_bottom_border="-",
             table_width=SCREEN_WIDTH,
             footer=[GO_BACK_ACTION],
         )
 
-        super(WordsScreen, self).__init__(self.table, self.actions)
+        super(PhrasesScreen, self).__init__(self.table, self.actions)

@@ -1,10 +1,10 @@
 import random
-from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
 
 import bext
 
+from Code.TeverusSDK.ConfigTool import ConfigTool
 from Code.TeverusSDK.DataBase import DataBase
 from Code.TeverusSDK.Screen import SCREEN_WIDTH, show_message, wait_for_enter
 from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN, BLUE
@@ -13,14 +13,11 @@ PASS = "PASS"
 FAIL = "FAIL"
 DONE = "DONE"
 
-CONFIG = ConfigParser()
-CONFIG.read("config.ini")
-SETTINGS = CONFIG["Settings"]
 
-
-class PracticeSingleWord:
+class PracticeSingleUnit:
     def __init__(self, main):
         self.start_time = datetime.now()
+        self.unit = main.unit_name.upper()
         self.statistics = {PASS: 0, FAIL: 0, DONE: 0}
         self.wrong_answers = []
         self.delta = 0
@@ -34,10 +31,11 @@ class PracticeSingleWord:
         self.english = None
         self.word_index = None
 
-        self.total_words = SETTINGS.getint(Settings.WORDS_PER_RUN)
+        self.settings = ConfigTool(Path("config.ini")).get_settings()
+        self.total_words = self.settings.getint(Settings.WORDS_PER_RUN)
 
         self.column_width = int((SCREEN_WIDTH - 3 - 2) / 2)
-        self.database = DataBase(Path("Files/Words.db"))
+        self.database = DataBase(main.database_path)
         self.df = self.database.read_table()
 
         self.get_words_for_this_run()
@@ -86,8 +84,9 @@ class PracticeSingleWord:
 
         done = self.statistics[DONE] + 1
         left = self.total_words - done
-        title = f"WORD {done:02} of {self.total_words} [LEFT: {left}]"
-        main.table.table_title = title.center(SCREEN_WIDTH)
+        stats = f"{self.unit} {done:02}/{self.total_words}".rjust(self.column_width)
+        left_units = f"LEFT: {left}".ljust(self.column_width)
+        main.table.table_title = f"{stats} | {left_units}"
 
     @staticmethod
     def get_input(message):
@@ -98,12 +97,12 @@ class PracticeSingleWord:
 
     def evaluate_answer(self):
         if self.user_input == self.finnish:
-            self.delta = SETTINGS.getint(Settings.POSITIVE_CHANGE)
+            self.delta = self.settings.getint(Settings.POSITIVE_CHANGE)
             self.message = ("Success :)", GREEN)
             self.statistics[PASS] += 1
 
         else:
-            self.delta = SETTINGS.getint(Settings.NEGATIVE_CHANGE)
+            self.delta = self.settings.getint(Settings.NEGATIVE_CHANGE)
             not_part = "" if not self.user_input else f', not "{self.user_input}"'
             wrong = f"""Sorry, it's "{self.finnish}"{not_part}"""
             self.message = (wrong, RED)
@@ -136,7 +135,7 @@ class PracticeSingleWord:
     def practice_the_word_if_needed(self):
         if self.delta < 0:
             correct = 0
-            need_correct = SETTINGS.getint(Settings.NEED_CORRECT)
+            need_correct = self.settings.getint(Settings.NEED_CORRECT)
             while correct != need_correct:
                 times_left = need_correct - correct
                 plural = "s" if times_left > 1 else ""
@@ -166,7 +165,7 @@ class PracticeSingleWord:
         self.df.loc[self.word_index, "Score"] += self.delta
         self.df.sort_values(by="Score", inplace=True)
 
-        if SETTINGS.getboolean(Settings.RECORD_ANSWERS):
+        if self.settings.getboolean(Settings.RECORD_ANSWERS):
             self.database.write_to_table(self.df)
 
         self.statistics[DONE] += 1

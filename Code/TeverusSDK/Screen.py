@@ -227,7 +227,13 @@ def wait_for_enter():
     wait_for_key(Key.ENTER)
 
 
-def show_message(msg, border=" ", centered=True, upper=True, need_confirmation=True):
+def show_message(
+    msg: tuple,
+    border=" ",
+    centered=True,
+    upper=True,
+    need_confirmation=True,
+):
     text_message = msg[0]
     color = msg[1]
 

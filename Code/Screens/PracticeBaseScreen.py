@@ -1,14 +1,18 @@
-from Code.Modules.PracticeSingleWord import PracticeSingleWord
+from pathlib import Path
+
 from Code.TeverusSDK.Screen import Screen, Action, SCREEN_WIDTH
 from Code.TeverusSDK.Table import Table, ColumnWidth
 
 
-class PracticeSingleWordScreen(Screen):
-    def __init__(self):
+class BasePracticeScreen(Screen):
+    def __init__(self, function, unit_name, database_base: Path):
+        self.unit_name = unit_name
+        self.database_path = database_base
+
         self.actions = [
             Action(
                 name="",
-                function=PracticeSingleWord,
+                function=function,
                 arguments={"main": self},
                 immediate_action=True,
                 go_back=True,
@@ -16,7 +20,7 @@ class PracticeSingleWordScreen(Screen):
         ]
 
         self.table = Table(
-            table_title="Practice a single word",
+            table_title=" ",
             rows=[
                 [" PASS", f"{'-' * 100}", "  0 %"],
                 [" FAIL", f"{'-' * 100}", "  0 %"],
@@ -28,4 +32,4 @@ class PracticeSingleWordScreen(Screen):
             table_width=SCREEN_WIDTH,
         )
 
-        super(PracticeSingleWordScreen, self).__init__(self.table, self.actions)
+        super(BasePracticeScreen, self).__init__(self.table, self.actions)
