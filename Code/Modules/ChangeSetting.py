@@ -3,13 +3,13 @@ from pathlib import Path
 import bext
 
 from Code.TeverusSDK.ConfigTool import ConfigTool
-from Code.TeverusSDK.Screen import show_message
+from Code.TeverusSDK.Screen import show_message, HALF_COLUMN
 from Code.TeverusSDK.Table import GREEN
 
 
 class ChangeSetting:
     def __init__(self, name, main):
-        self.name = name
+        self.name = name.capitalize()
         self.main = main
         self.user_input = None
 
@@ -33,14 +33,12 @@ class ChangeSetting:
         ConfigTool(Path("config.ini")).update_a_setting(self.name, self.user_input)
 
     def update_table(self):
-        # TODO X        Нужно подстраховать ширину, если изменилась ширина числа
-
         rows = self.main.table.rows
         target_row = [[i, row] for i, row in enumerate(rows) if self.name in row[0]][0]
         target_index = target_row[0]
         target_line = target_row[1][0]
-        current_number = target_line.split("|")[-1].strip()
-        new_line = rows[target_index][0].replace(current_number, self.user_input)
+        name, _ = [e.strip() for e in target_line.split("|")]
+        new_line = f"{name.capitalize().rjust(HALF_COLUMN)} | {self.user_input.ljust(HALF_COLUMN)}"
         self.main.table.rows[target_index][0] = new_line
 
         self.main.table.show_cursor = False

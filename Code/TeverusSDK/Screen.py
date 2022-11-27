@@ -11,6 +11,7 @@ from Code.TeverusSDK.Table import END_HIGHLIGHT, Table
 ########################################################################################
 
 SCREEN_WIDTH = 119
+HALF_COLUMN = int((SCREEN_WIDTH - 3 - 2) / 2)
 GO_BACK_TEXT = "[Q] Go back    "
 
 

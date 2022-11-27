@@ -7,38 +7,32 @@ from Code.TeverusSDK.Screen import (
     Action,
     SCREEN_WIDTH,
     GO_BACK_ACTION,
+    HALF_COLUMN,
 )
 from Code.TeverusSDK.Table import Table
 
 
 class SettingsScreen(Screen):
     def __init__(self):
-        name = 0
-        value = 1
-
         settings = ConfigTool(Path("config.ini")).get_settings()
-
-        self.settings = [[key.capitalize(), value] for key, value in settings.items()]
-
-        width_1 = max([len(setting[name]) for setting in self.settings])
-        width_2 = max([len(setting[value]) for setting in self.settings])
 
         self.actions = [
             Action(
-                name=setting[name],
+                name=setting,
                 function=ChangeSetting,
-                arguments={"name": setting[name], "main": self},
+                arguments={"name": setting, "main": self},
             )
-            for setting in self.settings
+            for setting in settings.keys()
         ]
 
         self.table = Table(
             table_title="Settings",
             rows=[
-                f"{setting[name].center(width_1)} | {setting[value].ljust(width_2)}"
-                for setting in self.settings
+                [f"{k.capitalize().rjust(HALF_COLUMN)} | {v.ljust(HALF_COLUMN)}"]
+                for k, v in settings.items()
             ],
             rows_bottom_border="-",
+            rows_centered=False,
             table_width=SCREEN_WIDTH,
             footer=[GO_BACK_ACTION],
         )
