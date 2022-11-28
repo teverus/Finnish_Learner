@@ -1,5 +1,6 @@
 import os
 from math import ceil
+from typing import Union
 
 import bext
 from colorama import Back, Fore
@@ -21,7 +22,7 @@ class Table:
     def __init__(
         self,
         # Rows
-        rows: list[str] or list[list[str]],
+        rows: Union[list[str] | list[list[str]]] = None,
         rows_top_border="=",
         rows_bottom_border="=",
         rows_centered=True,
@@ -44,11 +45,6 @@ class Table:
         clear_console=True,
         show_cursor=False,
     ):
-        """
-        [rows]
-            * Mandatory parameter, must be a list of strings or a list of lists
-            * Example: ["a", "b", "c", "d"] or [["a", "b"], ["c", "d"]]
-        """
         # Internal use only
         self.side_padding_length = 2
         self.wall_length = 3
@@ -153,6 +149,7 @@ class Table:
     ####################################################################################
     @staticmethod
     def get_rows(rows):
+        rows = [""] if not rows else rows
         rows = [rows] if not isinstance(rows, list) else rows
         result = [[r] if not isinstance(r, list) else r for r in rows]
 
