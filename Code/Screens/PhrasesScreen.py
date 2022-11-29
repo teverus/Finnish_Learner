@@ -1,9 +1,11 @@
-from Code.Screens.PracticePhrasesScreen import PracticePhrasesScreen
+from pathlib import Path
+
+from Code.Modules.PracticeSingleUnit import PracticeSingleUnit
+from Code.Screens.BasePracticeScreen import BasePracticeScreen
 from Code.TeverusSDK.Screen import (
     Screen,
     SCREEN_WIDTH,
     Action,
-    do_nothing,
     GO_BACK_ACTION,
 )
 from Code.TeverusSDK.Table import Table
@@ -14,11 +16,12 @@ class PhrasesScreen(Screen):
         self.actions = [
             Action(
                 name="Practice phrases",
-                function=PracticePhrasesScreen,
-            ),
-            Action(
-                name="See all phrases",
-                function=do_nothing,
+                function=BasePracticeScreen,
+                arguments={
+                    "function": PracticeSingleUnit,
+                    "unit_name": "phrase",
+                    "database_base": Path("Files/Phrases.db"),
+                },
             ),
         ]
 

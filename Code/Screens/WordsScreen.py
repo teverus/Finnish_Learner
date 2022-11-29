@@ -1,4 +1,7 @@
-from Code.Screens.PracticeWordSingleScreen import PracticeWordSingleScreen
+from pathlib import Path
+
+from Code.Modules.PracticeSingleUnit import PracticeSingleUnit
+from Code.Screens.BasePracticeScreen import BasePracticeScreen
 from Code.TeverusSDK.Screen import (
     Screen,
     SCREEN_WIDTH,
@@ -14,7 +17,12 @@ class WordsScreen(Screen):
         self.actions = [
             Action(
                 name="Practice a single word",
-                function=PracticeWordSingleScreen,
+                function=BasePracticeScreen,
+                arguments={
+                    "function": PracticeSingleUnit,
+                    "unit_name": "word",
+                    "database_base": Path("Files/Words.db"),
+                },
             ),
             Action(
                 name="Practice word combinations",
