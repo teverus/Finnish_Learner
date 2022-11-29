@@ -20,10 +20,6 @@ class WordsScreen(Screen):
                 name="Practice word combinations",
                 function=do_nothing,
             ),
-            Action(
-                name="See all words",
-                function=do_nothing,
-            ),
         ]
 
         self.table = Table(

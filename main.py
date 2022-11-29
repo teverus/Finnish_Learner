@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from Code.Screens.ExitScreen import ExitScreen
+from Code.Screens.LogsScreen import LogsScreen
 from Code.Screens.PhrasesScreen import PhrasesScreen
 from Code.Screens.SettingsScreen import SettingsScreen
 from Code.Screens.WordsScreen import WordsScreen
@@ -11,9 +12,11 @@ from Code.TeverusSDK.Table import Table
 class WelcomeScreen(Screen):
     def __init__(self):
         self.start_time = datetime.now()
+
         self.actions = [
             Action(name="Words", function=WordsScreen),
             Action(name="Phrases", function=PhrasesScreen),
+            Action(name="Logs", function=LogsScreen),
             Action(name="Settings", function=SettingsScreen),
         ]
 
