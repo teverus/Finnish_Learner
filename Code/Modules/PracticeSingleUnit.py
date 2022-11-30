@@ -17,6 +17,7 @@ DONE = "DONE"
 class PracticeSingleUnit:
     def __init__(self, main):
         self.start_time = datetime.now()
+        self.time_elapsed = None
         self.unit = main.unit_name.upper()
         self.statistics = {PASS: 0, FAIL: 0, DONE: 0}
         self.wrong_answers = []
@@ -56,6 +57,12 @@ class PracticeSingleUnit:
         self.show_wrong_answers_if_any()
 
         wait_for_enter()
+
+        logs_database = DataBase(Path("Files/Logs.db"))
+        logs_df = logs_database.read_table()
+        date = datetime.today().strftime("%d %B %Y")
+        logs_df.loc[len(logs_df)] = [date, main.exercise_name, self.time_elapsed]
+        logs_database.write_to_table(logs_df)
 
     ####################################################################################
     #    HELPERS                                                                       #
@@ -113,8 +120,8 @@ class PracticeSingleUnit:
     def show_results_table(self, main):
         self.update_table(main)
         finish_time = datetime.now()
-        time_elapsed = str(finish_time - self.start_time).split(".")[0]
-        main.table.table_title = f"Results | {time_elapsed}"
+        self.time_elapsed = str(finish_time - self.start_time).split(".")[0]
+        main.table.table_title = f"Results | {self.time_elapsed}"
         main.table.show_cursor = False
         main.table.print_table()
 

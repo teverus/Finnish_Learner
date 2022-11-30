@@ -22,6 +22,7 @@ class WordsScreen(Screen):
                     "function": PracticeSingleUnit,
                     "unit_name": "word",
                     "database_base": Path("Files/Words.db"),
+                    "exercise_name": "Single word practice",
                 },
             ),
             Action(

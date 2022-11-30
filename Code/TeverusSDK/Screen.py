@@ -12,6 +12,7 @@ from Code.TeverusSDK.Table import END_HIGHLIGHT, Table
 
 SCREEN_WIDTH = 119
 HALF_COLUMN = int((SCREEN_WIDTH - 3 - 2) / 2)
+THIRD_COLUMN = int((SCREEN_WIDTH - (3 * 2) - 2) / 3)
 GO_BACK_TEXT = "[Q] Go back    "
 
 
@@ -259,3 +260,5 @@ GO_BACK_ACTION = Action(
     go_back=True,
     shortcut=[Key.Q, Key.Q_RU],
 )
+
+ACTIONS_STUB = [Action(function=do_nothing)]

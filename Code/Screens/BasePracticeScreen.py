@@ -5,9 +5,10 @@ from Code.TeverusSDK.Table import Table, ColumnWidth
 
 
 class BasePracticeScreen(Screen):
-    def __init__(self, function, unit_name, database_base: Path):
+    def __init__(self, function, unit_name, database_base: Path, exercise_name):
         self.unit_name = unit_name
         self.database_path = database_base
+        self.exercise_name = exercise_name
 
         self.actions = [
             Action(

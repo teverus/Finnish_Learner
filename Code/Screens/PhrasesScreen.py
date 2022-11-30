@@ -21,6 +21,7 @@ class PhrasesScreen(Screen):
                     "function": PracticeSingleUnit,
                     "unit_name": "phrase",
                     "database_base": Path("Files/Phrases.db"),
+                    "exercise_name": "Phrase practice",
                 },
             ),
         ]

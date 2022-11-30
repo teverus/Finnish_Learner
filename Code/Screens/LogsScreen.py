@@ -3,10 +3,10 @@ from pathlib import Path
 from Code.TeverusSDK.DataBase import DataBase
 from Code.TeverusSDK.Screen import (
     Screen,
-    Action,
     SCREEN_WIDTH,
     GO_BACK_ACTION,
-    do_nothing,
+    THIRD_COLUMN as THIRD,
+    ACTIONS_STUB,
 )
 from Code.TeverusSDK.Table import Table
 
@@ -17,16 +17,17 @@ class LogsScreen(Screen):
         self.df = self.database.read_table()
 
         if len(self.df):
-            ...
+            df_rows = [list(list(self.df.loc[index])) for index in range(len(self.df))]
+            rows = [" | ".join([c.center(THIRD) for c in df_row]) for df_row in df_rows]
         else:
-            self.actions = [Action(name="No records so far...", function=do_nothing)]
+            rows = ["No records so far..."]
 
         self.table = Table(
             table_title="Logs",
-            rows=[action.name for action in self.actions],
+            rows=rows,
             rows_bottom_border="-",
             table_width=SCREEN_WIDTH,
             footer=[GO_BACK_ACTION],
         )
 
-        super(LogsScreen, self).__init__(self.table, self.actions)
+        super(LogsScreen, self).__init__(self.table, ACTIONS_STUB)
