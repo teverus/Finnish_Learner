@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from Code.TeverusSDK.DataBase import DataBase
@@ -16,11 +17,7 @@ class LogsScreen(Screen):
         self.database = DataBase(Path("Files/Logs.db"))
         self.df = self.database.read_table()
 
-        if len(self.df):
-            df_rows = [list(list(self.df.loc[index])) for index in range(len(self.df))]
-            rows = [" | ".join([c.center(THIRD) for c in df_row]) for df_row in df_rows]
-        else:
-            rows = ["No records so far..."]
+        rows = self.get_records() if len(self.df) else ["No records so far..."]
 
         self.table = Table(
             table_title="Logs",
@@ -31,3 +28,50 @@ class LogsScreen(Screen):
         )
 
         super(LogsScreen, self).__init__(self.table, ACTIONS_STUB)
+
+    def get_records(self):
+        df_rows = [list(list(self.df.loc[index])) for index in range(len(self.df))]
+        unique_dates = self.get_unique_dates(df_rows)
+        total_day_time = self.get_total_day_times(unique_dates, df_rows)
+        rows = self.get_rows(df_rows, total_day_time)
+
+        return rows
+
+    @staticmethod
+    def get_unique_dates(df_rows):
+        unique_dates = []
+        for recorded_date in [r[0] for r in df_rows]:
+            if recorded_date not in unique_dates:
+                unique_dates.append(recorded_date)
+
+        return unique_dates
+
+    @staticmethod
+    def get_total_day_times(unique_dates, df_rows):
+        total_day_time = {}
+        UNIX_START = datetime(1970, 1, 1)
+        for date in unique_dates:
+            total = timedelta()
+            for row in df_rows:
+                if date in row:
+                    total += datetime.strptime(row[2], "%H:%M:%S") - UNIX_START
+            total_day_time[date] = str(total).split(", ")[-1]
+
+        return total_day_time
+
+    @staticmethod
+    def get_rows(df_rows, total_day_time):
+        rows = []
+        # already_used = False
+        for row in df_rows:
+            date = row[0]
+            known_date = bool([r for r in rows if date in r])
+            if known_date:
+                row[0] = f"[{total_day_time[date]}]"
+                # already_used = True
+                # TODO X    Не писать фразу второй раз
+                # TODO XX   Добавлять -----|------|------
+
+            rows.append(" | ".join([c.center(THIRD) for c in row]))
+
+        return rows
