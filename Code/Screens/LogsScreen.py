@@ -62,16 +62,21 @@ class LogsScreen(Screen):
     @staticmethod
     def get_rows(df_rows, total_day_time):
         rows = []
-        # already_used = False
+        already_used = False
+        current_date = None
         for row in df_rows:
             date = row[0]
+            if not current_date:
+                current_date = date
+            elif date != current_date:
+                rows.append(f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}")
+                current_date = date
+                already_used = False
             known_date = bool([r for r in rows if date in r])
-            if known_date:
+            if known_date and not already_used:
                 row[0] = f"[{total_day_time[date]}]"
-                # already_used = True
-                # TODO X    Не писать фразу второй раз
-                # TODO XX   Добавлять -----|------|------
-
+                already_used = True
+            elif known_date and already_used:
+                row[0] = ""
             rows.append(" | ".join([c.center(THIRD) for c in row]))
-
         return rows
