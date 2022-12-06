@@ -6,7 +6,6 @@ from Code.TeverusSDK.Screen import (
     Screen,
     SCREEN_WIDTH,
     Action,
-    do_nothing,
     GO_BACK_ACTION,
 )
 from Code.TeverusSDK.Table import Table
@@ -24,10 +23,6 @@ class WordsScreen(Screen):
                     "database_base": Path("Files/Words.db"),
                     "exercise_name": "Single word practice",
                 },
-            ),
-            Action(
-                name="Practice word combinations",
-                function=do_nothing,
             ),
         ]
 
