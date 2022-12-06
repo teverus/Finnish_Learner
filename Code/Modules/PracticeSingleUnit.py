@@ -6,7 +6,12 @@ import bext
 
 from Code.TeverusSDK.ConfigTool import ConfigTool
 from Code.TeverusSDK.DataBase import DataBase
-from Code.TeverusSDK.Screen import SCREEN_WIDTH, show_message, wait_for_enter
+from Code.TeverusSDK.Screen import (
+    SCREEN_WIDTH,
+    show_message,
+    wait_for_enter,
+    THIRD_COLUMN as THIRD,
+)
 from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN, BLUE
 
 PASS = "PASS"
@@ -58,11 +63,7 @@ class PracticeSingleUnit:
 
         wait_for_enter()
 
-        logs_database = DataBase(Path("Files/Logs.db"))
-        logs_df = logs_database.read_table()
-        date = datetime.today().strftime("%d %B %Y")
-        logs_df.loc[len(logs_df)] = [date, main.exercise_name, self.time_elapsed]
-        logs_database.write_to_table(logs_df)
+        self.record_activity_to_logs(main)
 
     ####################################################################################
     #    HELPERS                                                                       #
@@ -127,17 +128,18 @@ class PracticeSingleUnit:
 
     def show_wrong_answers_if_any(self):
         if self.wrong_answers:
-            width = int((SCREEN_WIDTH - (3 * 2) - 2) / 3)
-            title = f"{'ENGLISH'.center(width)} | {'CORRECT'.center(width)} | {'INCORRECT'.center(width)}"
-            wrong_table = Table(
-                table_title=title,
+            title = f" {'ENGLISH'.center(THIRD)} | {'CORRECT'.center(THIRD)} | {'INCORRECT'.center(THIRD)}"
+            delimiter = f"-{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}-"
+            print(title)
+            print(delimiter)
+            Table(
+                table_title=False,
                 table_title_top_border=False,
                 rows=self.wrong_answers,
-                rows_top_border="-",
+                rows_top_border=False,
                 table_width=SCREEN_WIDTH,
                 clear_console=False,
-            )
-            wrong_table.print_table()
+            ).print_table()
 
     def practice_the_word_if_needed(self):
         if self.delta < 0:
@@ -199,6 +201,13 @@ class PracticeSingleUnit:
                 self.used_words.append(random_word)
 
                 break
+
+    def record_activity_to_logs(self, main):
+        logs_database = DataBase(Path("Files/Logs.db"))
+        logs_df = logs_database.read_table()
+        date = datetime.today().strftime("%d %B %Y")
+        logs_df.loc[len(logs_df)] = [date, main.exercise_name, self.time_elapsed]
+        logs_database.write_to_table(logs_df)
 
 
 ########################################################################################

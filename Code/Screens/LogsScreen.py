@@ -64,6 +64,7 @@ class LogsScreen(Screen):
         rows = []
         already_used = False
         current_date = None
+
         for row in df_rows:
             date = row[0]
             if not current_date:
@@ -79,4 +80,5 @@ class LogsScreen(Screen):
             elif known_date and already_used:
                 row[0] = ""
             rows.append(" | ".join([c.center(THIRD) for c in row]))
+
         return rows
