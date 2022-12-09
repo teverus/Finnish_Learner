@@ -14,6 +14,8 @@ from Code.TeverusSDK.Table import Table
 
 class LogsScreen(Screen):
     def __init__(self):
+        self.max_rows = 36
+
         self.database = DataBase(Path("Files/Logs.db"))
         self.df = self.database.read_table()
 
@@ -22,6 +24,7 @@ class LogsScreen(Screen):
         self.table = Table(
             table_title="Logs",
             rows=rows,
+            max_rows=self.max_rows,
             rows_bottom_border="-",
             table_width=SCREEN_WIDTH,
             footer=[GO_BACK_ACTION],
@@ -31,6 +34,7 @@ class LogsScreen(Screen):
 
     def get_records(self):
         df_rows = [list(list(self.df.loc[index])) for index in range(len(self.df))]
+        df_rows.reverse()
         unique_dates = self.get_unique_dates(df_rows)
         total_day_time = self.get_total_day_times(unique_dates, df_rows)
         rows = self.get_rows(df_rows, total_day_time)
@@ -59,8 +63,7 @@ class LogsScreen(Screen):
 
         return total_day_time
 
-    @staticmethod
-    def get_rows(df_rows, total_day_time):
+    def get_rows(self, df_rows, total_day_time):
         rows = []
         already_used = False
         current_date = None
@@ -70,7 +73,14 @@ class LogsScreen(Screen):
             if not current_date:
                 current_date = date
             elif date != current_date:
-                rows.append(f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}")
+                projected_length = len(rows) + 1
+                if projected_length == self.max_rows + 1:
+                    msg = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 4, "*")
+                elif projected_length == self.max_rows:
+                    msg = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 4, "*")
+                else:
+                    msg = f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}"
+                rows.append(msg)
                 current_date = date
                 already_used = False
             known_date = bool([r for r in rows if date in r])
