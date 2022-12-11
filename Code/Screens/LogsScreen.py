@@ -6,8 +6,8 @@ from Code.TeverusSDK.Screen import (
     Screen,
     SCREEN_WIDTH,
     GO_BACK_ACTION,
-    THIRD_COLUMN as THIRD,
     ACTIONS_STUB,
+    THIRD_COLUMN as THIRD,
 )
 from Code.TeverusSDK.Table import Table
 
@@ -34,12 +34,23 @@ class LogsScreen(Screen):
 
     def get_records(self):
         df_rows = [list(list(self.df.loc[index])) for index in range(len(self.df))]
-        df_rows.reverse()
+        logs = self.get_logs_as_dict(df_rows)
         unique_dates = self.get_unique_dates(df_rows)
         total_day_time = self.get_total_day_times(unique_dates, df_rows)
-        rows = self.get_rows(df_rows, total_day_time)
+        rows = self.get_rows(logs, unique_dates, total_day_time)
 
         return rows
+
+    @staticmethod
+    def get_logs_as_dict(df_rows):
+        logs = {}
+        for row in df_rows:
+            date = row[0]
+            if date not in logs.keys():
+                logs[date] = []
+            logs[date].append(row)
+
+        return logs
 
     @staticmethod
     def get_unique_dates(df_rows):
@@ -63,32 +74,40 @@ class LogsScreen(Screen):
 
         return total_day_time
 
-    def get_rows(self, df_rows, total_day_time):
+    def get_rows(self, logs, unique_dates, total_day_time):
+        unique_dates.reverse()
+
         rows = []
-        already_used = False
+        second_instance = False
         current_date = None
 
-        for row in df_rows:
-            date = row[0]
-            if not current_date:
-                current_date = date
-            elif date != current_date:
+        for unique_date in unique_dates:
+            already_used = False
+            current_date = unique_date if not current_date else current_date
+
+            if unique_date != current_date:
                 projected_length = len(rows) + 1
-                if projected_length == self.max_rows + 1:
-                    msg = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 4, "*")
-                elif projected_length == self.max_rows:
-                    msg = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 4, "*")
+                if projected_length == self.max_rows:
+                    border = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 4, "*")
+                elif projected_length == self.max_rows + 1:
+                    border = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 4, "*")
                 else:
-                    msg = f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}"
-                rows.append(msg)
-                current_date = date
-                already_used = False
-            known_date = bool([r for r in rows if date in r])
-            if known_date and not already_used:
-                row[0] = f"[{total_day_time[date]}]"
-                already_used = True
-            elif known_date and already_used:
-                row[0] = ""
-            rows.append(" | ".join([c.center(THIRD) for c in row]))
+                    border = f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}"
+
+                rows.append(border)
+                current_date = unique_date
+
+            selection = logs[current_date]
+
+            for row in selection:
+                if not already_used:
+                    already_used = True
+                    second_instance = True
+                elif already_used and not second_instance:
+                    row[0] = ""
+                elif already_used and second_instance:
+                    row[0] = f"[{total_day_time[current_date]}]"
+                    second_instance = False
+                rows.append(" | ".join([c.center(THIRD) for c in row]))
 
         return rows
