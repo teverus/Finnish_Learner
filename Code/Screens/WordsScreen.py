@@ -2,6 +2,7 @@ from pathlib import Path
 
 from Code.Modules.PracticeSingleUnit import PracticeSingleUnit
 from Code.Screens.BasePracticeScreen import BasePracticeScreen
+from Code.Screens.BaseStatisticsScreen import BaseStatisticsScreen
 from Code.TeverusSDK.Screen import (
     Screen,
     SCREEN_WIDTH,
@@ -22,6 +23,14 @@ class WordsScreen(Screen):
                     "unit_name": "word",
                     "database_base": Path("Files/Words.db"),
                     "exercise_name": "Single word practice",
+                },
+            ),
+            Action(
+                name="See statistics",
+                function=BaseStatisticsScreen,
+                arguments={
+                    "table_title": "Words statistics",
+                    "database_path": "Files/Words.db",
                 },
             ),
         ]

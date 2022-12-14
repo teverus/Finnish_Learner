@@ -6,12 +6,7 @@ import bext
 
 from Code.TeverusSDK.ConfigTool import ConfigTool
 from Code.TeverusSDK.DataBase import DataBase
-from Code.TeverusSDK.Screen import (
-    SCREEN_WIDTH,
-    show_message,
-    wait_for_enter,
-    THIRD_COLUMN as THIRD,
-)
+from Code.TeverusSDK.Screen import SCREEN_WIDTH, show_message, wait_for_enter, THIRD
 from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN, BLUE
 
 PASS = "PASS"

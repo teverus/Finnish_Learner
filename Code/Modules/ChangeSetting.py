@@ -3,7 +3,7 @@ from pathlib import Path
 import bext
 
 from Code.TeverusSDK.ConfigTool import ConfigTool
-from Code.TeverusSDK.Screen import show_message, HALF_COLUMN
+from Code.TeverusSDK.Screen import show_message, HALF
 from Code.TeverusSDK.Table import GREEN
 
 
@@ -38,7 +38,7 @@ class ChangeSetting:
         target_index = target_row[0]
         target_line = target_row[1][0]
         name, _ = [e.strip() for e in target_line.split("|")]
-        new_line = f"{name.capitalize().rjust(HALF_COLUMN)} | {self.user_input.ljust(HALF_COLUMN)}"
+        new_line = f"{name.capitalize().rjust(HALF)} | {self.user_input.ljust(HALF)}"
         self.main.table.rows[target_index][0] = new_line
 
         self.main.table.show_cursor = False

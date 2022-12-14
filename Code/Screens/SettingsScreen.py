@@ -7,7 +7,7 @@ from Code.TeverusSDK.Screen import (
     Action,
     SCREEN_WIDTH,
     GO_BACK_ACTION,
-    HALF_COLUMN,
+    HALF,
 )
 from Code.TeverusSDK.Table import Table
 
@@ -28,7 +28,7 @@ class SettingsScreen(Screen):
         self.table = Table(
             table_title="Settings",
             rows=[
-                [f"{k.capitalize().rjust(HALF_COLUMN)} | {v.ljust(HALF_COLUMN)}"]
+                [f"{k.capitalize().rjust(HALF)} | {v.ljust(HALF)}"]
                 for k, v in settings.items()
             ],
             rows_bottom_border="-",

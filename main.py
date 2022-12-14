@@ -1,3 +1,8 @@
+"""
+# TODO  XX      Показывать изменение слова?
+# TODO  XXX     Возможность выйти из упражнения
+"""
+
 from datetime import datetime
 
 from Code.Screens.ExitScreen import ExitScreen

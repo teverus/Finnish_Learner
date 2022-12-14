@@ -7,7 +7,7 @@ from Code.TeverusSDK.Screen import (
     SCREEN_WIDTH,
     GO_BACK_ACTION,
     ACTIONS_STUB,
-    THIRD_COLUMN as THIRD,
+    THIRD,
 )
 from Code.TeverusSDK.Table import Table
 
