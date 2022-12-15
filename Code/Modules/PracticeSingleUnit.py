@@ -45,6 +45,7 @@ class PracticeSingleUnit:
             self.update_table(main)
             main.table.print_table()
 
+            # TODO поднять вот это над self.update_table
             self.get_random_word()
 
             self.ask_user_to_type_the_finnish_word()
@@ -87,11 +88,13 @@ class PracticeSingleUnit:
             row[TICKS] = result
             row[PERCENTAGE] = f"{str(stat).rjust(3)} %"
 
+        # TODO Получить тир слова
+        # TODO Добавить прошедшее время
         done = self.statistics[DONE] + 1
         left = self.total_words - done
-        stats = f"{self.unit} {done:02}/{self.total_words}".rjust(self.column_width)
+        words = f"{self.unit} {done:02}/{self.total_words}"
         left_units = f"LEFT: {left}".ljust(self.column_width)
-        main.table.table_title = f"{stats} | {left_units}"
+        main.table.table_title = f"{words} | {left_units}"
 
     @staticmethod
     def get_input(message):
