@@ -48,6 +48,8 @@ class PracticeSingleUnit:
             self.get_random_word()
 
             self.ask_user_to_type_the_finnish_word()
+            if self.user_input == "q":
+                break
             self.evaluate_answer()
             self.record_result_to_database_and_statistics()
             self.show_message_after_input()
@@ -154,6 +156,10 @@ class PracticeSingleUnit:
             show_message(("Success :)", GREEN), upper=False)
 
     def ask_user_to_type_the_finnish_word(self):
+        change = '"a:" -> "ä", "o:" -> "ö"'.rjust(self.column_width)
+        type_to_exit = '"q" + Enter -> quit'.ljust(self.column_width)
+        print(f"{change} | {type_to_exit}".center(SCREEN_WIDTH))
+        print(f"{'-' * SCREEN_WIDTH}")
         prompt = f" {self.english.center(self.column_width)} | >>> "
         user_input = input(prompt)
         user_input = user_input.strip().replace("a:", "ä").replace("o:", "ö")
