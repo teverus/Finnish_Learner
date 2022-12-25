@@ -6,7 +6,13 @@ import bext
 
 from Code.TeverusSDK.ConfigTool import ConfigTool
 from Code.TeverusSDK.DataBase import DataBase
-from Code.TeverusSDK.Screen import SCREEN_WIDTH, show_message, wait_for_enter, THIRD
+from Code.TeverusSDK.Screen import (
+    SCREEN_WIDTH,
+    show_message,
+    wait_for_enter,
+    THIRD,
+    HALF,
+)
 from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN, BLUE
 
 PASS = "PASS"
@@ -30,23 +36,23 @@ class PracticeSingleUnit:
 
         self.finnish = None
         self.english = None
+        self.tier = None
         self.word_index = None
 
         self.settings = ConfigTool(Path("config.ini")).get_settings()
         self.total_words = self.settings.getint(Settings.WORDS_PER_RUN)
 
-        self.column_width = int((SCREEN_WIDTH - 3 - 2) / 2)
         self.database = DataBase(main.database_path)
         self.df = self.database.read_table()
 
         self.get_words_for_this_run()
 
         for _ in range(self.total_words):
+
+            self.get_random_word()
+
             self.update_table(main)
             main.table.print_table()
-
-            # TODO поднять вот это над self.update_table
-            self.get_random_word()
 
             self.ask_user_to_type_the_finnish_word()
             if self.user_input == "q":
@@ -88,13 +94,20 @@ class PracticeSingleUnit:
             row[TICKS] = result
             row[PERCENTAGE] = f"{str(stat).rjust(3)} %"
 
-        # TODO Получить тир слова
-        # TODO Добавить прошедшее время
         done = self.statistics[DONE] + 1
+        words = f"{self.unit} [{done:02}/{self.total_words}]"
+
+        tier = f"TIER [{self.tier}]"
+
         left = self.total_words - done
-        words = f"{self.unit} {done:02}/{self.total_words}"
-        left_units = f"LEFT: {left}".ljust(self.column_width)
-        main.table.table_title = f"{words} | {left_units}"
+        left_units = f"LEFT [{left}]"
+
+        elapsed = str(datetime.now() - self.start_time)
+        time_elapsed = f'TIME [{elapsed.split(".")[0][2:]}]'
+
+        left_part = f"{words} | {tier}".rjust(HALF)
+        right_part = f"{left_units} | {time_elapsed}".ljust(HALF)
+        main.table.table_title = f"{left_part} | {right_part}"
 
     @staticmethod
     def get_input(message):
@@ -159,11 +172,11 @@ class PracticeSingleUnit:
             show_message(("Success :)", GREEN), upper=False)
 
     def ask_user_to_type_the_finnish_word(self):
-        change = '"a:" -> "ä", "o:" -> "ö"'.rjust(self.column_width)
-        type_to_exit = '"q" + Enter -> quit'.ljust(self.column_width)
+        change = '"a:" -> "ä", "o:" -> "ö"'.rjust(HALF)
+        type_to_exit = '"q" + Enter -> quit'.ljust(HALF)
         print(f"{change} | {type_to_exit}".center(SCREEN_WIDTH))
-        print(f"{'-' * SCREEN_WIDTH}")
-        prompt = f" {self.english.center(self.column_width)} | >>> "
+        print(f"-{'-' * HALF}-+-{'-' * HALF}-")
+        prompt = f" {self.english.center(HALF)} | >>> "
         user_input = input(prompt)
         user_input = user_input.strip().replace("a:", "ä").replace("o:", "ö")
 
@@ -201,6 +214,7 @@ class PracticeSingleUnit:
 
                 self.finnish = word.Finnish.values[0]
                 self.english = word.English.values[0]
+                self.tier = word.Score.values[0]
                 self.word_index = word.index.values[0]
                 self.used_words.append(random_word)
 
