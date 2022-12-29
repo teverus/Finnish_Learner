@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from Code.Modules.ChangeSetting import ChangeSetting
-from Code.TeverusSDK.ConfigTool import ConfigTool
 from Code.TeverusSDK.Screen import (
     Screen,
     Action,
@@ -10,11 +9,13 @@ from Code.TeverusSDK.Screen import (
     HALF,
 )
 from Code.TeverusSDK.Table import Table
+from Code.TeverusSDK.YamlTool import YamlTool
 
 
 class SettingsScreen(Screen):
     def __init__(self):
-        settings = ConfigTool(Path("config.ini")).get_settings()
+        # settings = ConfigTool(Path("config.ini")).get_settings()
+        settings = YamlTool(Path("config.yaml")).get_settings()
 
         self.actions = [
             Action(
@@ -28,7 +29,7 @@ class SettingsScreen(Screen):
         self.table = Table(
             table_title="Settings",
             rows=[
-                [f"{k.capitalize().rjust(HALF)} | {v.ljust(HALF)}"]
+                [f"{k.capitalize().rjust(HALF)} | {str(v).ljust(HALF)}"]
                 for k, v in settings.items()
             ],
             rows_bottom_border="-",

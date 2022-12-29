@@ -13,7 +13,7 @@ from Code.TeverusSDK.Screen import (
     THIRD,
     HALF,
 )
-from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN, BLUE
+from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN
 
 PASS = "PASS"
 FAIL = "FAIL"
@@ -76,7 +76,7 @@ class PracticeSingleUnit:
         CHARS = [
             f"{GREEN} {END_HIGHLIGHT}",
             f"{RED} {END_HIGHLIGHT}",
-            f"{BLUE} {END_HIGHLIGHT}",
+            "X",
         ]
         TICKS = 1
         PERCENTAGE = 2
@@ -135,7 +135,7 @@ class PracticeSingleUnit:
         self.update_table(main)
         finish_time = datetime.now()
         self.time_elapsed = str(finish_time - self.start_time).split(".")[0]
-        main.table.table_title = f"Results | {self.time_elapsed}"
+        main.table.table_title = f"Results [{self.time_elapsed}]"
         main.table.show_cursor = False
         main.table.print_table()
 
