@@ -4,7 +4,6 @@ from pathlib import Path
 
 import bext
 
-from Code.TeverusSDK.ConfigTool import ConfigTool
 from Code.TeverusSDK.DataBase import DataBase
 from Code.TeverusSDK.Screen import (
     SCREEN_WIDTH,
@@ -14,6 +13,7 @@ from Code.TeverusSDK.Screen import (
     HALF,
 )
 from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN
+from Code.TeverusSDK.YamlTool import YamlTool
 
 PASS = "PASS"
 FAIL = "FAIL"
@@ -39,8 +39,8 @@ class PracticeSingleUnit:
         self.tier = None
         self.word_index = None
 
-        self.settings = ConfigTool(Path("config.ini")).get_settings()
-        self.total_words = self.settings.getint(Settings.WORDS_PER_RUN)
+        self.settings = YamlTool(Path("config.yaml")).get_settings()
+        self.total_words = self.settings[Settings.WORDS_PER_RUN]
 
         self.database = DataBase(main.database_path)
         self.df = self.database.read_table()
@@ -118,12 +118,12 @@ class PracticeSingleUnit:
 
     def evaluate_answer(self):
         if self.user_input == self.finnish:
-            self.delta = self.settings.getint(Settings.POSITIVE_CHANGE)
+            self.delta = self.settings[Settings.POSITIVE_CHANGE]
             self.message = ("Success :)", GREEN)
             self.statistics[PASS] += 1
 
         else:
-            self.delta = self.settings.getint(Settings.NEGATIVE_CHANGE)
+            self.delta = self.settings[Settings.NEGATIVE_CHANGE]
             not_part = "" if not self.user_input else f', not "{self.user_input}"'
             wrong = f"""Sorry, it's "{self.finnish}"{not_part}"""
             self.message = (wrong, RED)
@@ -157,7 +157,7 @@ class PracticeSingleUnit:
     def practice_the_word_if_needed(self):
         if self.delta < 0:
             correct = 0
-            need_correct = self.settings.getint(Settings.NEED_CORRECT)
+            need_correct = self.settings[Settings.NEED_CORRECT]
             while correct != need_correct:
                 times_left = need_correct - correct
                 plural = "s" if times_left > 1 else ""
@@ -191,7 +191,7 @@ class PracticeSingleUnit:
         self.df.loc[self.word_index, "Score"] += self.delta
         self.df.sort_values(by="Score", inplace=True)
 
-        if self.settings.getboolean(Settings.RECORD_ANSWERS):
+        if self.settings[Settings.RECORD_ANSWERS]:
             self.database.write_to_table(self.df)
 
         self.statistics[DONE] += 1
