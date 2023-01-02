@@ -14,7 +14,6 @@ from Code.TeverusSDK.YamlTool import YamlTool
 
 class SettingsScreen(Screen):
     def __init__(self):
-        # settings = ConfigTool(Path("config.ini")).get_settings()
         settings = YamlTool(Path("config.yaml")).get_settings()
 
         self.actions = [
