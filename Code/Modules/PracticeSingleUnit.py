@@ -1,4 +1,5 @@
 import random
+from copy import copy
 from datetime import datetime
 from pathlib import Path
 
@@ -9,10 +10,9 @@ from Code.TeverusSDK.Screen import (
     SCREEN_WIDTH,
     show_message,
     wait_for_enter,
-    THIRD,
     HALF,
 )
-from Code.TeverusSDK.Table import Table, RED, END_HIGHLIGHT, GREEN
+from Code.TeverusSDK.Table import RED, END_HIGHLIGHT, GREEN, Table
 from Code.TeverusSDK.YamlTool import YamlTool
 
 PASS = "PASS"
@@ -20,24 +20,30 @@ FAIL = "FAIL"
 DONE = "DONE"
 
 
+class Unit:
+    def __init__(self, finnish, english, tier, index):
+        self.finnish = finnish
+        self.english = english
+        self.tier = tier
+        self.index = index
+        self.delta = 0
+        self.wrong_answer = ""
+
+
 class PracticeSingleUnit:
     def __init__(self, main):
         self.start_time = datetime.now()
         self.time_elapsed = None
-        self.unit = main.unit_name.upper()
+        self.unit_name = main.unit_name.upper()
         self.statistics = {PASS: 0, FAIL: 0, DONE: 0}
-        self.wrong_answers = []
-        self.delta = 0
         self.message = None
         self.user_input = None
         self.known_scores = None
         self.words_for_this_run = None
         self.used_words = []
 
-        self.finnish = None
-        self.english = None
-        self.tier = None
-        self.word_index = None
+        self.unit = None
+        self.units_done = []
 
         self.settings = YamlTool(Path("config.yaml")).get_settings()
         self.total_words = self.settings[Settings.WORDS_PER_RUN]
@@ -63,7 +69,6 @@ class PracticeSingleUnit:
             self.practice_the_word_if_needed()
 
         self.show_results_table(main)
-        self.show_wrong_answers_if_any()
 
         wait_for_enter()
 
@@ -95,9 +100,9 @@ class PracticeSingleUnit:
             row[PERCENTAGE] = f"{str(stat).rjust(3)} %"
 
         done = self.statistics[DONE] + 1
-        words = f"{self.unit} [{done:02}/{self.total_words}]"
+        words = f"{self.unit_name} [{done:02}/{self.total_words}]"
 
-        tier = f"TIER [{self.tier}]"
+        tier = f"TIER [{self.unit.tier}]"
 
         left = self.total_words - done
         left_units = f"LEFT [{left}]"
@@ -117,21 +122,26 @@ class PracticeSingleUnit:
         return user_input
 
     def evaluate_answer(self):
-        if self.user_input == self.finnish:
-            self.delta = self.settings[Settings.POSITIVE_CHANGE]
-            self.message = ("Success :)", GREEN)
+        if self.user_input == self.unit.finnish:
+            self.unit.delta = self.settings[Settings.POSITIVE_CHANGE]
             self.statistics[PASS] += 1
+            self.message = ("Success :)", GREEN)
 
         else:
-            self.delta = self.settings[Settings.NEGATIVE_CHANGE]
-            not_part = "" if not self.user_input else f', not "{self.user_input}"'
-            wrong = f"""Sorry, it's "{self.finnish}"{not_part}"""
-            self.message = (wrong, RED)
+            self.unit.delta = self.settings[Settings.NEGATIVE_CHANGE]
             self.statistics[FAIL] += 1
-            wrong_answer = "?" if not self.user_input else self.user_input
-            self.wrong_answers.append([self.english, self.finnish, wrong_answer])
+            not_part = "" if not self.user_input else f', not "{self.user_input}"'
+            wrong = f"""Sorry, it's "{self.unit.finnish}"{not_part}"""
+            self.message = (wrong, RED)
+            self.unit.wrong_answer = "?" if not self.user_input else self.user_input
+
+        self.units_done.append(copy(self.unit))
 
     def show_results_table(self, main):
+        self.update_results_table_head(main)
+        self.show_results()
+
+    def update_results_table_head(self, main):
         self.update_table(main)
         finish_time = datetime.now()
         self.time_elapsed = str(finish_time - self.start_time).split(".")[0]
@@ -139,34 +149,47 @@ class PracticeSingleUnit:
         main.table.show_cursor = False
         main.table.print_table()
 
-    def show_wrong_answers_if_any(self):
-        if self.wrong_answers:
-            title = f" {'ENGLISH'.center(THIRD)} | {'CORRECT'.center(THIRD)} | {'INCORRECT'.center(THIRD)}"
-            delimiter = f"-{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}-"
-            print(title)
-            print(delimiter)
-            Table(
-                table_title=False,
-                table_title_top_border=False,
-                rows=self.wrong_answers,
-                rows_top_border=False,
-                table_width=SCREEN_WIDTH,
-                clear_console=False,
-            ).print_table()
+    def show_results(self):
+        rows = [
+            [
+                f"{RED}[{unit.tier}]->[{unit.tier + unit.delta}]{END_HIGHLIGHT}",
+                unit.english,
+                unit.finnish,
+                unit.wrong_answer,
+            ]
+            for unit in self.units_done
+        ]
+
+        # TODO Указывать правильный цвет
+        # TODO Высчитывать правильную ширину
+
+        widths = {i: max([len(r[i]) for r in rows]) for i in range(len(rows[0]))}
+        adjusted_rows = [[e.center(widths[i]) for i, e in enumerate(r)] for r in rows]
+        new_rows = [" | ".join(row) for row in adjusted_rows]
+        ...
+
+        Table(
+            rows=new_rows,
+            rows_top_border=False,
+            rows_bottom_border=False,
+            clear_console=False,
+            highlight=False,
+        ).print_table()
+        ...
 
     def practice_the_word_if_needed(self):
-        if self.delta < 0:
+        if self.unit.delta < 0:
             correct = 0
             need_correct = self.settings[Settings.NEED_CORRECT]
             while correct != need_correct:
-                times_left = need_correct - correct
-                plural = "s" if times_left > 1 else ""
-                msg = f'\nPlease type "{self.finnish}" {times_left} time{plural}\n>>> '
+                left = need_correct - correct
+                plur = "s" if left > 1 else ""
+                msg = f'\nPlease type "{self.unit.finnish}" {left} time{plur}\n>>> '
                 new_input = self.get_input(msg)
-                if new_input == self.finnish:
+                if new_input == self.unit.finnish:
                     correct += 1
                 else:
-                    msg = (f'Sorry, you need to type "{self.finnish}"', RED)
+                    msg = (f'Sorry, you need to type "{self.unit.finnish}"', RED)
                     show_message(msg, upper=False, need_confirmation=False)
             bext.hide()
             show_message(("Success :)", GREEN), upper=False)
@@ -176,19 +199,19 @@ class PracticeSingleUnit:
         type_to_exit = '"q" + Enter -> quit'.ljust(HALF)
         print(f"{change} | {type_to_exit}".center(SCREEN_WIDTH))
         print(f"-{'-' * HALF}-+-{'-' * HALF}-")
-        prompt = f" {self.english.center(HALF)} | >>> "
+        prompt = f" {self.unit.english.center(HALF)} | >>> "
         user_input = input(prompt)
         user_input = user_input.strip().replace("a:", "ä").replace("o:", "ö")
 
         self.user_input = user_input
 
     def show_message_after_input(self):
-        confirmation = True if self.delta > 0 else False
+        confirmation = True if self.unit.delta > 0 else False
         [bext.show if not confirmation else bext.hide][0]()
         show_message(self.message, upper=False, need_confirmation=confirmation)
 
     def record_result_to_database_and_statistics(self):
-        self.df.loc[self.word_index, "Score"] += self.delta
+        self.df.loc[self.unit.index, "Score"] += self.unit.delta
         self.df.sort_values(by="Score", inplace=True)
 
         if self.settings[Settings.RECORD_ANSWERS]:
@@ -210,14 +233,15 @@ class PracticeSingleUnit:
 
             if len(proper_words):
                 random_word = random.choice(proper_words)
-                word = self.df.loc[self.df.English == random_word]
-
-                self.finnish = word.Finnish.values[0]
-                self.english = word.English.values[0]
-                self.tier = word.Score.values[0]
-                self.word_index = word.index.values[0]
                 self.used_words.append(random_word)
 
+                word = self.df.loc[self.df.English == random_word]
+                self.unit = Unit(
+                    finnish=word.Finnish.values[0],
+                    english=word.English.values[0],
+                    tier=word.Score.values[0],
+                    index=word.index.values[0],
+                )
                 break
 
     def record_activity_to_logs(self, main):

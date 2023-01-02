@@ -198,6 +198,8 @@ class Table:
         expected_widths = {**fit_cols, **full_cols}
 
         full_target_length = None
+        number_of_full_cols = len(full_cols)
+
         for col_index, width_type in expected_widths.items():
             if self.table_width:
                 if width_type == ColumnWidth.FIT:
@@ -211,7 +213,6 @@ class Table:
                     if not full_target_length:
                         already_used = sum([v for v in column_widths.values()])
                         remaining = actual_width - already_used
-                        number_of_full_cols = len(full_cols)
                         if remaining % number_of_full_cols == 0:
                             full_target_length = int(remaining / number_of_full_cols)
                         else:
