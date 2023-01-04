@@ -3,7 +3,7 @@ mode con: cols=119 lines=43
 title=Suomalainen opiskelija
 
 : ======================================================================================
-: Installing virtual environment
+:    Installing virtual environment
 : ======================================================================================
 echo Activating virtual environment. Please stand by...
 set venv_name=venv
@@ -12,11 +12,11 @@ call %venv_name%\Scripts\activate
 pip install -r requirements.txt 1>nul 2>nul
 
 : ======================================================================================
-: Starting the application
+:    Starting the application
 : ======================================================================================
 py main.py
 
 : ======================================================================================
-: So that we can read logs if needed
+:    So that we can read logs if needed
 : ======================================================================================
 timeout -1

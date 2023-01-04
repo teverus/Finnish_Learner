@@ -18,6 +18,10 @@ from Code.TeverusSDK.YamlTool import YamlTool
 PASS = "PASS"
 FAIL = "FAIL"
 DONE = "DONE"
+ARROW_UP = "↑"
+ARROW_DOWN = "↓"
+WALL = 3
+SIDE_PADDING = 2
 
 
 class Unit:
@@ -81,7 +85,7 @@ class PracticeSingleUnit:
         CHARS = [
             f"{GREEN} {END_HIGHLIGHT}",
             f"{RED} {END_HIGHLIGHT}",
-            "X",
+            "#",
         ]
         TICKS = 1
         PERCENTAGE = 2
@@ -150,9 +154,12 @@ class PracticeSingleUnit:
         main.table.print_table()
 
     def show_results(self):
+        if not self.units_done:
+            return
+
         rows = [
             [
-                f"{RED}[{unit.tier}]->[{unit.tier + unit.delta}]{END_HIGHLIGHT}",
+                f"{unit.tier} => {unit.tier + unit.delta} {ARROW_UP if unit.delta > 0 else ARROW_DOWN}",
                 unit.english,
                 unit.finnish,
                 unit.wrong_answer,
@@ -160,22 +167,33 @@ class PracticeSingleUnit:
             for unit in self.units_done
         ]
 
-        # TODO Указывать правильный цвет
-        # TODO Высчитывать правильную ширину
-
         widths = {i: max([len(r[i]) for r in rows]) for i in range(len(rows[0]))}
-        adjusted_rows = [[e.center(widths[i]) for i, e in enumerate(r)] for r in rows]
-        new_rows = [" | ".join(row) for row in adjusted_rows]
-        ...
+        rows_fixed = [[e.center(widths[i]) for i, e in enumerate(r)] for r in rows]
+        length_taken = sum(widths.values()) + ((len(widths) - 1) * WALL) + SIDE_PADDING
+        length_available = SCREEN_WIDTH - length_taken
+        front = False
+        while length_available:
+            for ind_col in range(1, len(rows_fixed[0])):
+                if length_available:
+                    for r in rows_fixed:
+                        r[ind_col] = f" {r[ind_col]}" if front else f"{r[ind_col]} "
+                    length_available -= 1
+            front = not front
+
+        widths_ = {i: max([len(r[i]) for r in rows_fixed]) for i in range(len(rows[0]))}
+        names = ["Change", "English", "Finnish", "Incorrect"]
+        headers = [name.center(widths_[i]).upper() for i, name in enumerate(names)]
+        delimiter = [f"{'-' * width}" for width in widths_.values()]
+
+        print(f" {' | '.join(headers)} ")
+        print(f"-{'-+-'.join(delimiter)}-")
 
         Table(
-            rows=new_rows,
+            rows=[" | ".join(row) for row in rows_fixed],
             rows_top_border=False,
-            rows_bottom_border=False,
             clear_console=False,
             highlight=False,
         ).print_table()
-        ...
 
     def practice_the_word_if_needed(self):
         if self.unit.delta < 0:
