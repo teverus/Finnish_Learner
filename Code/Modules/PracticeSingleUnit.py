@@ -159,8 +159,8 @@ class PracticeSingleUnit:
 
         rows = [
             [
-                f"{unit.tier} => {unit.tier + unit.delta} {ARROW_UP if unit.delta > 0 else ARROW_DOWN}",
                 unit.english,
+                f"{unit.tier: 2} => {(unit.tier + unit.delta): 2} {ARROW_UP if unit.delta > 0 else ARROW_DOWN}",
                 unit.finnish,
                 unit.wrong_answer,
             ]
@@ -173,7 +173,7 @@ class PracticeSingleUnit:
         length_available = SCREEN_WIDTH - length_taken
         front = False
         while length_available:
-            for ind_col in range(1, len(rows_fixed[0])):
+            for ind_col in [0, 2, 3]:
                 if length_available:
                     for r in rows_fixed:
                         r[ind_col] = f" {r[ind_col]}" if front else f"{r[ind_col]} "
@@ -181,7 +181,7 @@ class PracticeSingleUnit:
             front = not front
 
         widths_ = {i: max([len(r[i]) for r in rows_fixed]) for i in range(len(rows[0]))}
-        names = ["Change", "English", "Finnish", "Incorrect"]
+        names = ["English", "Change", "Finnish", "Incorrect"]
         headers = [name.center(widths_[i]).upper() for i, name in enumerate(names)]
         delimiter = [f"{'-' * width}" for width in widths_.values()]
 
@@ -199,6 +199,7 @@ class PracticeSingleUnit:
             rows_top_border=False,
             clear_console=False,
             highlight=False,
+            table_width=SCREEN_WIDTH,
         ).print_table()
 
     def practice_the_word_if_needed(self):
