@@ -188,8 +188,14 @@ class PracticeSingleUnit:
         print(f" {' | '.join(headers)} ")
         print(f"-{'-+-'.join(delimiter)}-")
 
+        rows_fixed_line = [" | ".join(row) for row in rows_fixed]
+        rows_fixes_color = [
+            [f"{GREEN if ARROW_UP in row else RED}{row}{END_HIGHLIGHT}"]
+            for row in rows_fixed_line
+        ]
+
         Table(
-            rows=[" | ".join(row) for row in rows_fixed],
+            rows=rows_fixes_color,
             rows_top_border=False,
             clear_console=False,
             highlight=False,
