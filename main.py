@@ -1,5 +1,4 @@
 """
-# TODO  X     Показывать изменение слова?
 """
 
 from datetime import datetime
