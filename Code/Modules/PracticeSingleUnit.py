@@ -109,7 +109,7 @@ class PracticeSingleUnit:
             row[PERCENTAGE] = f"{str(stat).rjust(3)} %"
 
         done = self.statistics[DONE] + 1
-        words = f"{self.unit_name} [{done:02}/{self.total_words}]"
+        words = f"{self.unit_name} [{done:02}/{self.total_words:02}]"
 
         tier = f"TIER [{self.unit.tier}]"
 
@@ -172,40 +172,54 @@ class PracticeSingleUnit:
             for unit in self.units_done
         ]
 
-        widths = {i: max([len(r[i]) for r in rows]) for i in range(len(rows[0]))}
-        rows_fixed = [[e.center(widths[i]) for i, e in enumerate(r)] for r in rows]
-        length_taken = sum(widths.values()) + ((len(widths) - 1) * WALL) + SIDE_PADDING
-        length_available = SCREEN_WIDTH - length_taken
-        front = False
-        while length_available:
-            for ind_col in [0, 2, 3]:
-                if length_available:
-                    for r in rows_fixed:
-                        r[ind_col] = f" {r[ind_col]}" if front else f"{r[ind_col]} "
-                    length_available -= 1
-            front = not front
-
-        widths_ = {i: max([len(r[i]) for r in rows_fixed]) for i in range(len(rows[0]))}
-        names = ["English", "Change", "Finnish", "Incorrect"]
-        headers = [name.center(widths_[i]).upper() for i, name in enumerate(names)]
-        delimiter = [f"{'-' * width}" for width in widths_.values()]
-
-        print(f" {' | '.join(headers)} ")
-        print(f"-{'-+-'.join(delimiter)}-")
-
-        rows_fixed_line = [" | ".join(row) for row in rows_fixed]
-        rows_fixes_color = [
-            [f"{GREEN if ARROW_UP in row else RED}{row}{END_HIGHLIGHT}"]
-            for row in rows_fixed_line
-        ]
-
         Table(
-            rows=rows_fixes_color,
+            rows=rows,
             rows_top_border=False,
             clear_console=False,
             highlight=False,
             table_width=SCREEN_WIDTH,
+            headers=["English", "Change", "Finnish", "Incorrect"]
+            # column_widths={
+            #     0: ColumnWidth.FULL,
+            #     1: ColumnWidth.FIT,
+            #     2: ColumnWidth.FULL,
+            #     3: ColumnWidth.FIT,
+            # }
         ).print_table()
+        # widths = {i: max([len(r[i]) for r in rows]) for i in range(len(rows[0]))}
+        # rows_fixed = [[e.center(widths[i]) for i, e in enumerate(r)] for r in rows]
+        # length_taken = sum(widths.values()) + ((len(widths) - 1) * WALL) + SIDE_PADDING
+        # length_available = SCREEN_WIDTH - length_taken
+        # front = False
+        # while length_available:
+        #     for ind_col in [0, 2, 3]:
+        #         if length_available:
+        #             for r in rows_fixed:
+        #                 r[ind_col] = f" {r[ind_col]}" if front else f"{r[ind_col]} "
+        #             length_available -= 1
+        #     front = not front
+        #
+        # widths_ = {i: max([len(r[i]) for r in rows_fixed]) for i in range(len(rows[0]))}
+        # names = ["English", "Change", "Finnish", "Incorrect"]
+        # headers = [name.center(widths_[i]).upper() for i, name in enumerate(names)]
+        # delimiter = [f"{'-' * width}" for width in widths_.values()]
+        #
+        # print(f" {' | '.join(headers)} ")
+        # print(f"-{'-+-'.join(delimiter)}-")
+        #
+        # rows_fixed_line = [" | ".join(row) for row in rows_fixed]
+        # rows_fixes_color = [
+        #     [f"{GREEN if ARROW_UP in row else RED}{row}{END_HIGHLIGHT}"]
+        #     for row in rows_fixed_line
+        # ]
+        #
+        # Table(
+        #     rows=rows_fixes_color,
+        #     rows_top_border=False,
+        #     clear_console=False,
+        #     highlight=False,
+        #     table_width=SCREEN_WIDTH,
+        # ).print_table()
 
     def practice_the_word_if_needed(self):
         if self.unit.delta < 0:

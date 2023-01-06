@@ -21,6 +21,9 @@ class ColumnWidth:
 class Table:
     def __init__(
         self,
+        # Headers
+        headers: list = None,
+        headers_upper=True,
         # Rows
         rows: Union[list[str] | list[list[str]]] = None,
         rows_top_border="=",
@@ -54,6 +57,10 @@ class Table:
         self.table_title_top_border = table_title_top_border
         self.table_title_centered = table_title_centered
         self.table_title_caps = table_title_caps
+
+        # Headers
+        self.headers = headers
+        self.headers_upper = headers_upper
 
         # Rows
         self.rows = self.get_rows(rows)
@@ -103,6 +110,10 @@ class Table:
             tt = tt.upper() if self.table_title_caps else tt
             tt = tt.center(self.table_width) if self.table_title_centered else tt
             print(tt)
+
+        # Print headers if any
+        if self.headers:
+            ...
 
         # TODO XXXXX    Сделать headers
 
@@ -188,6 +199,8 @@ class Table:
         return table_width
 
     def get_column_widths(self, target_widths=None):
+        # TODO Вот тут надо переделать
+
         actual_width = self.table_width - self.walls_length - self.side_padding_length
         column_widths = {}
 
