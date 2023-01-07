@@ -210,59 +210,57 @@ class Table:
         if self.headers:
             widths_headers = {i: len(head) for i, head in enumerate(self.headers)}
             lists = widths_max.values(), widths_headers.values()
-            widths_rows_adjusted = {
-                index: max(row, head) for index, (row, head) in enumerate(zip(*lists))
-            }
-            widths_max = widths_rows_adjusted
+            adjusted = {i: max(row, head) for i, (row, head) in enumerate(zip(*lists))}
+            widths_max = adjusted
 
-            length_available = self.table_width - (sum(widths_max.values()) + taken)
+        length_available = self.table_width - (sum(widths_max.values()) + taken)
 
-            while length_available:
-                # TODO Вот тут надо выбирать, какие колонки трогать
-                for ind_col in range(len(self.visible_rows[0])):
-                    if length_available:
-                        widths_max[ind_col] += 1
-                        length_available -= 1
+        while length_available:
+            # TODO Вот тут надо выбирать, какие колонки трогать
+            for ind_col in range(len(self.visible_rows[0])):
+                if length_available:
+                    widths_max[ind_col] += 1
+                    length_available -= 1
 
-        # === LEGACY ===================================================================
-        actual_width = self.table_width - taken
-        column_widths = {}
+        # === [LEGACY] =================================================================
+        # actual_width = self.table_width - taken
+        # column_widths = {}
+        #
+        # if not widths_types or len(widths_types) > self.max_columns:
+        #     widths_types = {i: ColumnWidth.FULL for i in range(self.max_columns)}
+        #
+        # fit_cols = {k: v for k, v in widths_types.items() if v == ColumnWidth.FIT}
+        # full_cols = {k: v for k, v in widths_types.items() if v == ColumnWidth.FULL}
+        # expected_widths = {**fit_cols, **full_cols}
+        #
+        # full_target_length = None
+        # number_of_full_cols = len(full_cols)
+        # for col_index, width_type in expected_widths.items():
+        #     if self.table_width:
+        #         if width_type == ColumnWidth.FIT:
+        #             target_length = max(
+        #                 [
+        #                     len(row[col_index]) if isinstance(row, list) else len(row)
+        #                     for row in self.visible_rows
+        #                 ]
+        #             )
+        #         else:
+        #             if not full_target_length:
+        #                 already_used = sum([v for v in column_widths.values()])
+        #                 remaining = actual_width - already_used
+        #                 if remaining % number_of_full_cols == 0:
+        #                     full_target_length = int(remaining / number_of_full_cols)
+        #                 else:
+        #                     extra = remaining % number_of_full_cols
+        #                     proper_width = self.table_width - extra
+        #                     raise Exception(f"Please use table_width = {proper_width}")
+        #             target_length = full_target_length
+        #
+        #         column_widths[col_index] = target_length
+        #     else:
+        #         raise NotImplementedError("\n\nUse table_width!")
 
-        if not widths_types or len(widths_types) > self.max_columns:
-            widths_types = {i: ColumnWidth.FULL for i in range(self.max_columns)}
-
-        fit_cols = {k: v for k, v in widths_types.items() if v == ColumnWidth.FIT}
-        full_cols = {k: v for k, v in widths_types.items() if v == ColumnWidth.FULL}
-        expected_widths = {**fit_cols, **full_cols}
-
-        full_target_length = None
-        number_of_full_cols = len(full_cols)
-        for col_index, width_type in expected_widths.items():
-            if self.table_width:
-                if width_type == ColumnWidth.FIT:
-                    target_length = max(
-                        [
-                            len(row[col_index]) if isinstance(row, list) else len(row)
-                            for row in self.visible_rows
-                        ]
-                    )
-                else:
-                    if not full_target_length:
-                        already_used = sum([v for v in column_widths.values()])
-                        remaining = actual_width - already_used
-                        if remaining % number_of_full_cols == 0:
-                            full_target_length = int(remaining / number_of_full_cols)
-                        else:
-                            extra = remaining % number_of_full_cols
-                            proper_width = self.table_width - extra
-                            raise Exception(f"Please use table_width = {proper_width}")
-                    target_length = full_target_length
-
-                column_widths[col_index] = target_length
-            else:
-                raise NotImplementedError("\n\nUse table_width!")
-
-        return column_widths
+        return widths_max
 
     def get_visible_rows(self):
         previous_page = self.current_page - 1
