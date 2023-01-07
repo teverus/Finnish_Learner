@@ -171,6 +171,7 @@ class Table:
         if expected_width:
             return expected_width
 
+        # TODO If no expected width
         known_lengths = []
 
         # Calculate the widest possible title length

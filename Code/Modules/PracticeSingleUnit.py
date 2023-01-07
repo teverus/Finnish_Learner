@@ -36,6 +36,8 @@ class Unit:
 
 class PracticeSingleUnit:
     def __init__(self, main):
+        # === Variables ================================================================
+
         self.start_time = datetime.now()
         self.time_elapsed = None
         self.unit_name = main.unit_name.upper()
@@ -57,6 +59,8 @@ class PracticeSingleUnit:
 
         self.get_words_for_this_run()
 
+        # === Main loop ================================================================
+
         for _ in range(self.total_words):
 
             self.get_random_word()
@@ -72,11 +76,12 @@ class PracticeSingleUnit:
             self.show_message_after_input()
             self.practice_the_word_if_needed()
 
+        # === Finish ===================================================================
+
+        self.record_activity_to_logs(main)
         self.show_results_table(main)
 
         wait_for_enter()
-
-        self.record_activity_to_logs(main)
 
     ####################################################################################
     #    HELPERS                                                                       #
