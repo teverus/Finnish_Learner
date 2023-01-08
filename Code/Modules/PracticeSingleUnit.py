@@ -12,7 +12,7 @@ from Code.TeverusSDK.Screen import (
     wait_for_enter,
     HALF,
 )
-from Code.TeverusSDK.Table import RED, END_HIGHLIGHT, GREEN, Table
+from Code.TeverusSDK.Table import RED, END_HIGHLIGHT, GREEN, Table, ColumnWidth
 from Code.TeverusSDK.YamlTool import YamlTool
 
 PASS = "PASS"
@@ -36,8 +36,7 @@ class Unit:
 
 class PracticeSingleUnit:
     def __init__(self, main):
-        # === Variables ================================================================
-
+        # ===[ Variables ]==============================================================
         self.start_time = datetime.now()
         self.time_elapsed = None
         self.unit_name = main.unit_name.upper()
@@ -59,8 +58,7 @@ class PracticeSingleUnit:
 
         self.get_words_for_this_run()
 
-        # === Main loop ================================================================
-
+        # ===[ Main loop ]==============================================================
         for _ in range(self.total_words):
 
             self.get_random_word()
@@ -76,8 +74,7 @@ class PracticeSingleUnit:
             self.show_message_after_input()
             self.practice_the_word_if_needed()
 
-        # === Finish ===================================================================
-
+        # ===[ Finish ]=================================================================
         self.record_activity_to_logs(main)
         self.show_results_table(main)
 
@@ -178,14 +175,15 @@ class PracticeSingleUnit:
             clear_console=False,
             highlight=False,
             table_width=SCREEN_WIDTH,
-            headers=["English", "Change", "Finnish", "Incorrect"]
-            # column_widths={
-            #     0: ColumnWidth.FULL,
-            #     1: ColumnWidth.FIT,
-            #     2: ColumnWidth.FULL,
-            #     3: ColumnWidth.FIT,
-            # }
+            headers=["English", "Change", "Finnish", "Incorrect"],
+            column_widths={
+                0: ColumnWidth.FULL,
+                1: ColumnWidth.FIT,
+                2: ColumnWidth.FULL,
+                3: ColumnWidth.FULL,
+            },
         ).print_table()
+        # ===[ LEGACY ]=================================================================
         # widths = {i: max([len(r[i]) for r in rows]) for i in range(len(rows[0]))}
         # rows_fixed = [[e.center(widths[i]) for i, e in enumerate(r)] for r in rows]
         # length_taken = sum(widths.values()) + ((len(widths) - 1) * WALL) + SIDE_PADDING
