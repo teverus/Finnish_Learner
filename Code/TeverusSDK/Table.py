@@ -30,6 +30,7 @@ class Table:
         rows_top_border="=",
         rows_bottom_border="=",
         rows_centered=True,
+        rows_highlight=None,
         # Table title
         table_title="",
         table_title_centered=True,
@@ -69,6 +70,7 @@ class Table:
         self.rows_top_border = rows_top_border
         self.rows_bottom_border = rows_bottom_border
         self.rows_centered = rows_centered
+        self.rows_highlight = rows_highlight
 
         # Footer
         self.footer = footer
@@ -137,14 +139,18 @@ class Table:
         # Print rows, highlighting them if necessary
         self.visible_rows = self.get_visible_rows()
         for x, row in enumerate(self.visible_rows):
+            r_highlight = self.rows_highlight[x] if self.rows_highlight else None
             line = []
             for y, cell in enumerate(row):
                 target_width = self.column_widths[y]
                 cell = cell.center(target_width) if self.rows_centered else cell
                 highlighted = f"{WHITE}{cell}{END_HIGHLIGHT}"
                 data = highlighted if [x, y] == self.highlight else cell
+                if self.rows_highlight:
+                    data = f"{r_highlight}{cell}{END_HIGHLIGHT}"
                 line.append(data)
-            line = " | ".join(line)
+            wall = f"{r_highlight} | {END_HIGHLIGHT}" if self.rows_highlight else " | "
+            line = wall.join(line)
             print(f" {line} ")
 
         # Print rows bottom border if any
