@@ -1,6 +1,3 @@
-"""
-"""
-
 from datetime import datetime
 
 from Code.Screens.ExitScreen import ExitScreen
