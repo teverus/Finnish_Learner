@@ -24,6 +24,7 @@ class Table:
         # Headers
         headers: list = None,
         headers_upper=True,
+        headers_centered=True,
         # Rows
         rows: Union[list[str] | list[list[str]]] = None,
         rows_top_border="=",
@@ -61,6 +62,7 @@ class Table:
         # Headers
         self.headers = headers
         self.headers_upper = headers_upper
+        self.headers_centered = headers_centered
 
         # Rows
         self.rows = self.get_rows(rows)
@@ -113,8 +115,20 @@ class Table:
 
         # Print headers if any
         if self.headers:
-            ...
-            # TODO XXXXX    Сделать headers
+            if self.headers_upper:
+                self.headers = [h.upper() for h in self.headers]
+
+            self.headers = [
+                header.center(self.column_widths[index])
+                if self.headers_centered
+                else header.ljust(self.column_widths[index])
+                for index, header in enumerate(self.headers)
+            ]
+            print(f' {" | ".join(self.headers)} ')
+
+            border_line = [f"{'-' * value}" for value in self.column_widths.values()]
+            border_line = "-+-".join(border_line)
+            print(f"-{border_line}-")
 
         # Print rows top border if any
         if self.rows_top_border:
