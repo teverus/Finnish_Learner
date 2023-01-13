@@ -75,6 +75,7 @@ class PracticeSingleUnit:
             self.practice_the_word_if_needed()
 
         # ===[ Finish ]=================================================================
+        self.record_time_elapsed()
         self.record_activity_to_logs(main)
         self.show_results_table(main)
 
@@ -149,8 +150,6 @@ class PracticeSingleUnit:
 
     def update_results_table_head(self, main):
         self.update_table(main)
-        finish_time = datetime.now()
-        self.time_elapsed = str(finish_time - self.start_time).split(".")[0]
         main.table.table_title = f"Results [{self.time_elapsed}]"
         main.table.show_cursor = False
         main.table.print_table()
@@ -263,6 +262,9 @@ class PracticeSingleUnit:
         date = datetime.today().strftime("%d %B %Y")
         logs_df.loc[len(logs_df)] = [date, main.exercise_name, self.time_elapsed]
         logs_database.write_to_table(logs_df)
+
+    def record_time_elapsed(self):
+        self.time_elapsed = str(datetime.now() - self.start_time).split(".")[0]
 
 
 ########################################################################################
