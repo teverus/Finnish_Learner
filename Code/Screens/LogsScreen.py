@@ -28,6 +28,7 @@ class LogsScreen(Screen):
             rows_bottom_border="-",
             table_width=SCREEN_WIDTH,
             footer=[GO_BACK_ACTION],
+            highlight=False,
         )
 
         super(LogsScreen, self).__init__(self.table, ACTIONS_STUB)
@@ -78,36 +79,64 @@ class LogsScreen(Screen):
         unique_dates.reverse()
 
         rows = []
-        second_instance = False
-        current_date = None
 
-        for unique_date in unique_dates:
-            already_used = False
-            current_date = unique_date if not current_date else current_date
+        for unique_date in unique_dates[:3]:
+            selection = logs[unique_date]
+            need_total_time = len(selection) > 1
 
-            if unique_date != current_date:
+            # TODO добавлять к selection границу
+
+            for index, row in enumerate(selection):
                 projected_length = len(rows) + 1
+
                 if projected_length == self.max_rows:
-                    border = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 4, "*")
-                elif projected_length == self.max_rows + 1:
-                    border = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 4, "*")
-                else:
-                    border = f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}"
+                    ...
 
-                rows.append(border)
-                current_date = unique_date
+                if need_total_time and index == 1:
+                    row[0] = f"[{total_day_time[unique_date]}]"
 
-            selection = logs[current_date]
-
-            for row in selection:
-                if not already_used:
-                    already_used = True
-                    second_instance = True
-                elif already_used and not second_instance:
+                elif need_total_time and index > 1:
                     row[0] = ""
-                elif already_used and second_instance:
-                    row[0] = f"[{total_day_time[current_date]}]"
-                    second_instance = False
+
+                # TODO вот тут правильно собирать, проверяя последний ли индекс
                 rows.append(" | ".join([c.center(THIRD) for c in row]))
+
+            projected_length = len(rows) + 1
+            if projected_length == self.max_rows:
+                ...
+            else:
+                rows.append(f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}")
+
+        # second_instance = False
+        # current_date = None
+        #
+        # for unique_date in unique_dates:
+        #     already_used = False
+        #     current_date = unique_date if not current_date else current_date
+        #
+        #     if unique_date != current_date:
+        #         projected_length = len(rows) + 1
+        #         if projected_length == self.max_rows:
+        #             border = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 4, "*")
+        #         elif projected_length == self.max_rows + 1:
+        #             border = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 4, "*")
+        #         else:
+        #             border = f"{'-' * THIRD}-+-{'-' * THIRD}-+-{'-' * THIRD}"
+        #
+        #         rows.append(border)
+        #         current_date = unique_date
+        #
+        #     selection = logs[current_date]
+        #
+        #     for row in selection:
+        #         if not already_used:
+        #             already_used = True
+        #             second_instance = True
+        #         elif already_used and not second_instance:
+        #             row[0] = ""
+        #         elif already_used and second_instance:
+        #             row[0] = f"[{total_day_time[current_date]}]"
+        #             second_instance = False
+        #         rows.append(" | ".join([c.center(THIRD) for c in row]))
 
         return rows
