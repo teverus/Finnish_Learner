@@ -31,6 +31,7 @@ class PhrasesScreen(Screen):
                 arguments={
                     "table_title": "Phrases statistics",
                     "database_path": "Files/Phrases.db",
+                    "unit_name": "phrase",
                 },
             ),
         ]

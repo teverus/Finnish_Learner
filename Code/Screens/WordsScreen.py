@@ -31,6 +31,7 @@ class WordsScreen(Screen):
                 arguments={
                     "table_title": "Words statistics",
                     "database_path": "Files/Words.db",
+                    "unit_name": "word",
                 },
             ),
         ]

@@ -12,13 +12,13 @@ from Code.TeverusSDK.Table import Table
 
 
 class BaseStatisticsScreen(Screen):
-    def __init__(self, table_title, database_path):
+    def __init__(self, table_title, database_path, unit_name):
         self.database = DataBase(Path(database_path))
         self.dataframe = self.database.read_table()
         self.statistics = dict(self.dataframe.groupby(by="Score").size())
 
         self.rows = [
-            f"{f'Tier [{key}] '.rjust(HALF)}-->{f' {value} word/s'.ljust(HALF)}"
+            f"{f'Tier [{key}] '.rjust(HALF)}-->{f' {str(value).rjust(3)} {unit_name}(s)'.ljust(HALF)}"
             for key, value in self.statistics.items()
         ]
 
