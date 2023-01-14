@@ -245,6 +245,9 @@ class Table:
             widths_max[far_right_column] += length_available
             length_available = 0
 
+        if length_available < 0:
+            raise Exception(f"\n[ERROR] Something is wrong!\n{length_available = }")
+
         while length_available:
             smallest = min([v for k, v in widths_max.items() if k in full])
             indices = [k for k, v in widths_max.items() if v == smallest and k in full]
