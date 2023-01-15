@@ -79,7 +79,6 @@ class LogsScreen(Screen):
         unique_dates.reverse()
 
         rows = []
-        # TODO Вот тут надо сделать >>> text <<<
         SEE_NEXT_PAGE = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 2, ">")
         # SEE_PREV_PAGE = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 2, "-")
 
