@@ -246,7 +246,12 @@ class Table:
             length_available = 0
 
         if length_available < 0:
-            raise Exception(f"\n[ERROR] Something is wrong!\n{length_available = }")
+            raise Exception(
+                f"\n[ERROR] Something is wrong!\n"
+                f"{length_available = }\n"
+                f"{self.table_width = }\n"
+                f"{widths_max = }"
+            )
 
         while length_available:
             smallest = min([v for k, v in widths_max.items() if k in full])

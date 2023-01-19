@@ -82,7 +82,7 @@ class LogsScreen(Screen):
         SEE_NEXT_PAGE = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 2, ">")
         # SEE_PREV_PAGE = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 2, "-")
 
-        for unique_date in unique_dates[:11]:
+        for unique_date in unique_dates:
             selection = logs[unique_date]
             need_total_time = len(selection) > 1
             selection += ["border"]
