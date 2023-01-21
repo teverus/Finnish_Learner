@@ -97,7 +97,6 @@ class LogsScreen(Screen):
                 diff = len(rows) - fit_page
                 [rows.pop() for _ in range(diff)]
                 current_page += 1
-                continue
 
             for index, row in enumerate(selection):
                 is_last_index = index == len(selection) - 1
