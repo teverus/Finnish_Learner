@@ -80,20 +80,27 @@ class LogsScreen(Screen):
 
         rows = []
         SEE_NEXT_PAGE = " MORE ON THE NEXT PAGE ".center(SCREEN_WIDTH - 2, ">")
-        # SEE_PREV_PAGE = " MORE ON THE PREVIOUS PAGE ".center(SCREEN_WIDTH - 2, "-")
 
+        current_page = 1
         for unique_date in unique_dates:
+
             selection = logs[unique_date]
             need_total_time = len(selection) > 1
             selection += ["border"]
+            rows_done = len(rows)
+            projected_length = rows_done + len(selection)
+            fit_page = self.max_rows * current_page
+
+            if projected_length >= fit_page:
+                stub = [SEE_NEXT_PAGE for _ in range(len(selection))]
+                rows += stub
+                diff = len(rows) - fit_page
+                [rows.pop() for _ in range(diff)]
+                current_page += 1
+                continue
 
             for index, row in enumerate(selection):
-                projected_length = len(rows) + 1
                 is_last_index = index == len(selection) - 1
-
-                # TODO вот тут надо считать с учетом страниц
-                if projected_length == self.max_rows:
-                    rows.append(SEE_NEXT_PAGE)
 
                 if need_total_time and index == 1:
                     row[0] = f"[{total_day_time[unique_date]}]"
