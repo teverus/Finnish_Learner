@@ -23,10 +23,11 @@ class BasePracticeScreen(Screen):
         self.table = Table(
             table_title=" ",
             rows=[
-                [" PASS", f"{'-' * 100}", "  0 %"],
-                [" FAIL", f"{'-' * 100}", "  0 %"],
-                [" DONE", f"{'-' * 100}", "  0 %"],
+                ["        PASS", f"{'-' * 100}", "  0 %"],
+                ["        FAIL", f"{'-' * 100}", "  0 %"],
+                ["        DONE", f"{'-' * 100}", "  0 %"],
             ],
+            rows_centered=False,
             column_widths={0: ColumnWidth.FIT, 1: ColumnWidth.FIT, 2: ColumnWidth.FIT},
             highlight=False,
             show_cursor=True,

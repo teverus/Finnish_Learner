@@ -1,6 +1,6 @@
 @echo off
-mode con: cols=119 lines=43
-title=Suomalainen opiskelija
+mode con: cols=133 lines=43
+title=Finnish learner
 
 : ======================================================================================
 :    Installing virtual environment

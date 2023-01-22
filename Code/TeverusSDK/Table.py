@@ -250,7 +250,10 @@ class Table:
                 f"\n[ERROR] Something is wrong!\n"
                 f"{length_available = }\n"
                 f"{self.table_width = }\n"
-                f"{widths_max = }"
+                f"{(sum(widths_max.values()) + taken) = }\n"
+                f"{sum(widths_max.values()) = }\n"
+                f"{taken = }\n"
+                f"{widths_max = }\n"
             )
 
         while length_available:
