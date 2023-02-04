@@ -69,6 +69,7 @@ class PracticeSingleUnit:
             self.ask_user_to_type_the_finnish_word()
             if self.user_input == "q":
                 break
+
             self.evaluate_answer()
             self.record_result_to_database_and_statistics()
             self.show_message_after_input()
