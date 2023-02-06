@@ -10,7 +10,7 @@ from Code.TeverusSDK.Table import END_HIGHLIGHT, Table
 #    SCREEN CONFIGS                                                                    #
 ########################################################################################
 
-SCREEN_WIDTH = 133
+SCREEN_WIDTH = 137
 HALF = int((SCREEN_WIDTH - 3 - 2) / 2)
 THIRD = int((SCREEN_WIDTH - (3 * 2) - 2) / 3)
 GO_BACK_TEXT = "[Q] Go back    "
