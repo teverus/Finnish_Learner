@@ -224,7 +224,9 @@ class PracticeSingleUnit:
         show_message(self.message, upper=False, need_confirmation=confirmation)
 
     def record_result_to_database_and_statistics(self):
-        self.df.loc[self.unit.index, "Score"] += self.unit.delta
+        old_score = int(self.df.loc[self.unit.index, "Score"])
+        new_score = old_score + self.unit.delta
+        self.df.loc[self.unit.index, "Score"] = str(new_score)
         self.df.sort_values(by="Score", inplace=True)
 
         if self.settings[Settings.RECORD_ANSWERS]:
